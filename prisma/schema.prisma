@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Content {
+  id        Int       @id @default(autoincrement())
+  title     String
+  type      ContentType // 'FILM' или 'SERIES'
+  seasons   Season[]   // Только для сериалов
+  restrictions Int
+  duration  Int?       // Продолжительность (для фильмов)
+  file_url String?
+  releaseDate DateTime // Дата выхода
+  url String @unique
+  @@index([type])
+}
+
+model Season { 
+  id        Int      @id @default(autoincrement())
+  number    Int      // Номер сезона
+  series    Content   @relation(fields: [seriesId], references: [id])
+  seriesId  Int
+  episodes  Episode[]
+}
+
+model Episode {
+  id        Int      @id @default(autoincrement())
+  title     String
+  duration  Int      // Продолжительность серии
+  file_url String
+  season    Season   @relation(fields: [seasonId], references: [id])
+  seasonId  Int
+  releaseDate DateTime
+}
+
+enum ContentType {
+  FILM
+  SERIES
+}
