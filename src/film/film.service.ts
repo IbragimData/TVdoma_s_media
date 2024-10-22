@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { createFilmDto } from './dto/createFilm.dto';
 
 @Injectable()
 export class FilmService {
@@ -11,6 +12,18 @@ export class FilmService {
        return await this.prismaService.content.findFirst({
             where: {
                 url
+            }
+        })
+    }
+
+    async createFilm(dto: createFilmDto){
+        const film = await this.getFilmByUrl(dto.url)
+        if(film){
+            throw new BadRequestException()
+        }
+        return await this.prismaService.content.create({
+            data: {
+                ...dto
             }
         })
     }
