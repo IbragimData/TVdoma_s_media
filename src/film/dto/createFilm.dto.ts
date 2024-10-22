@@ -4,6 +4,6 @@ export class createFilmDto {
     title: string
     type: ContentType
     duration: number
-    releaseDate: Date;
+    releaseDate: number;
     url: string
 }
