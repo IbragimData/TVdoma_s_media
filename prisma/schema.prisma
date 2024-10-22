@@ -17,11 +17,10 @@ model Content {
   id        Int       @id @default(autoincrement())
   title     String
   type      ContentType // 'FILM' или 'SERIES'
+  banner String?
   seasons   Season[]   // Только для сериалов
-  restrictions Int
   duration  Int?       // Продолжительность (для фильмов)
-  file_url String?
-  releaseDate DateTime // Дата выхода
+  releaseDate DateTime? // Дата выхода
   url String @unique
   @@index([type])
 }
@@ -38,7 +37,6 @@ model Episode {
   id        Int      @id @default(autoincrement())
   title     String
   duration  Int      // Продолжительность серии
-  file_url String
   season    Season   @relation(fields: [seasonId], references: [id])
   seasonId  Int
   releaseDate DateTime

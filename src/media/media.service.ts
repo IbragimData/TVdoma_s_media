@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -19,7 +19,7 @@ export class MediaService {
         })
     }
 
-    upload(file:Express.Multer.File, bucker:string, key:string){
+    async upload(file:Express.Multer.File, bucker:string, key:string){
         const upload = new Upload({
             client: this.s3,
             params: {
@@ -30,6 +30,25 @@ export class MediaService {
             }
         })
 
-        return upload.done()
+        const data = await  upload.done()
+        console.log(data)
+        return {
+            key: data.Key
+        }
+    }
+
+    async getFile(bucker: string, key:string):Promise<GetObjectCommandOutput>{
+        const command = new GetObjectCommand({
+            Bucket: bucker,
+            Key: key
+        })
+
+        try{
+            const res = await this.s3.send(command)
+            console.log(res)
+            return res
+        }catch(e){
+            throw new Error("could not retrieve file")
+        }
     }
 }
