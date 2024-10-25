@@ -15,7 +15,6 @@ export class FilmController {
         }
         return film
     }
-
     @Post()
     async createFilm(@Body() dto:createFilmDto){
         return await this.filmService.createFilm(dto)

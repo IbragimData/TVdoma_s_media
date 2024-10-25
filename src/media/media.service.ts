@@ -45,7 +45,7 @@ export class MediaService {
 
         try{
             const res = await this.s3.send(command)
-            console.log(res)
+            
             return res
         }catch(e){
             throw new Error("could not retrieve file")

@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Stream } from 'stream';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('media')
 export class MediaController {
@@ -30,7 +30,28 @@ export class MediaController {
       // Передаем поток данных в response
       (file.Body as Stream).pipe(res);
     }
-
-
+    @Get('video/:key')
+    async streamVideo(@Param('key') key: string, @Req() req: Request, @Res() res: Response) {
+      const bucketName = 'account-910';
+      const range = req.headers.range;
+    
+      const videoFile = await this.mediaService.getFile(bucketName, key);
+    
+      if (!videoFile.Body) {
+        return res.status(404).send('File not found');
+      }
+    
+      const videoSize = videoFile.ContentLength;
+      console.log(range)
+      // Если диапазон отсутствует, возвращаем полный файл
+        res.writeHead(200, {
+          'Content-Type': videoFile.ContentType,
+          'Content-Length': videoSize,
+          'Accept-Ranges': 'bytes',
+        });
+        const stream = videoFile.Body as Stream;
+        stream.pipe(res);
+    }
 }
+
 

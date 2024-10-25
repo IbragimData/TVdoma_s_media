@@ -16,6 +16,10 @@ export class FilmService {
         })
     }
 
+    async getAll(){
+        return await this.prismaService.content.findMany()
+    }
+
     async createFilm(dto: createFilmDto){
         const film = await this.getFilmByUrl(dto.url)
         if(film){
