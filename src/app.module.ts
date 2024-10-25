@@ -5,11 +5,12 @@ import { MediaModule } from './media/media.module';
 import { FilmModule } from './film/film.module';
 import { BannerModule } from './banner/banner.module';
 import { S3Module } from './s3/s3.module';
+import { FilmMediaModule } from './film-media/film-media.module';
 
 @Module({
   imports: [PrismaModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MediaModule, FilmModule, BannerModule, S3Module],
+  }), MediaModule, FilmModule, BannerModule, S3Module, FilmMediaModule],
   controllers: [],
   providers: [],
 })

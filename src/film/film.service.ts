@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createFilmDto } from './dto/createFilm.dto';
+import { updateFilmDto } from './dto/updateFilm.dto';
 
 @Injectable()
 export class FilmService {
@@ -18,6 +19,36 @@ export class FilmService {
 
     async getAll(){
         return await this.prismaService.content.findMany()
+    }
+
+    async updateFilm(dto:updateFilmDto, url:string){
+        const film = await this.getFilmByUrl(url)
+        if(!film){
+            throw new BadRequestException()
+        }
+
+        console.log(film.id)
+        const validUrl = await this.prismaService.content.findFirst({
+            where: {
+                url: dto.url,
+                id: {not: film.id}
+            }
+        })
+
+        console.log(validUrl)
+
+        if(validUrl){
+            throw new BadRequestException()
+        }
+       
+        return await this.prismaService.content.update({
+            where: {
+                id: film.id
+            },
+            data: {
+                ...dto
+            }
+        })
     }
 
     async createFilm(dto: createFilmDto){

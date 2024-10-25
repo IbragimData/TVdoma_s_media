@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { FilmService } from './film.service';
 import { createFilmDto } from './dto/createFilm.dto';
+import { updateFilmDto } from './dto/updateFilm.dto';
 
 @Controller('film')
 export class FilmController {
@@ -14,6 +15,11 @@ export class FilmController {
             throw new BadRequestException()
         }
         return film
+    }
+    @Patch(":url")
+    updateFilm(@Body() dto:updateFilmDto, @Param("url") url:string){
+        console.log("ibragim")
+        return this.filmService.updateFilm(dto, url)
     }
     @Post()
     async createFilm(@Body() dto:createFilmDto){
