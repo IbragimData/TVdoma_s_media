@@ -27,15 +27,12 @@ export class FilmService {
             throw new BadRequestException()
         }
 
-        console.log(film.id)
         const validUrl = await this.prismaService.content.findFirst({
             where: {
                 url: dto.url,
                 id: {not: film.id}
             }
         })
-
-        console.log(validUrl)
 
         if(validUrl){
             throw new BadRequestException()

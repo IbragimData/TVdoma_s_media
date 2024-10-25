@@ -1,4 +1,4 @@
-import { GetObjectCommand, GetObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, GetObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -42,12 +42,25 @@ export class S3Service {
             Bucket: bucker,
             Key: key
         })
-
         try{
             const res = await this.s3.send(command)
             
             return res
         }catch(e){
+            throw new Error("could not retrieve file")
+        }
+    }
+
+    async deleteFile(bucker:string, key: string){
+        const command =  new  DeleteObjectCommand({
+            Bucket: bucker,
+            Key: key
+        })
+        try{
+            const res = await this.s3.send(command)
+            return res
+        }catch(e){
+            console.log(e)
             throw new Error("could not retrieve file")
         }
     }

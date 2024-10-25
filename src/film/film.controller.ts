@@ -8,6 +8,7 @@ export class FilmController {
     constructor(
         private readonly filmService:FilmService
     ){}
+    
     @Get(":url")
     async getFilmByUrl(@Param("url") url:string){
         const film = await this.filmService.getFilmByUrl(url)
@@ -16,11 +17,12 @@ export class FilmController {
         }
         return film
     }
+
     @Patch(":url")
     updateFilm(@Body() dto:updateFilmDto, @Param("url") url:string){
-        console.log("ibragim")
         return this.filmService.updateFilm(dto, url)
     }
+
     @Post()
     async createFilm(@Body() dto:createFilmDto){
         return await this.filmService.createFilm(dto)

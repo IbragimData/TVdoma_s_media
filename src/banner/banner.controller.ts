@@ -1,4 +1,4 @@
-import { Controller, Param, Patch, RequestTimeoutException, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Param, Patch, RequestTimeoutException, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BannerService } from './banner.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -14,4 +14,11 @@ export class BannerController {
         const key = `${Date.now()}-${file.originalname}`
         return await this.bannerService.uploadBanner(url, file, bucker, key)
     }
+
+    @Delete(":url")
+    deleteBanner(@Param("url") url:string){
+        const bucker = "account-910"
+        return this.bannerService.deleteBanner(bucker, url)
+    }
+
 }

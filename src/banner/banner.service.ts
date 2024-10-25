@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { connect } from 'http2';
+import { FilmService } from 'src/film/film.service';
 import { MediaService } from 'src/media/media.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
@@ -8,7 +9,8 @@ import { S3Service } from 'src/s3/s3.service';
 export class BannerService {
     constructor(
         private readonly s3Service:S3Service,
-        private readonly prismaService:PrismaService        
+        private readonly prismaService:PrismaService,
+        private readonly filmService:FilmService      
     ){}
 
     async uploadBanner(url:string, file:Express.Multer.File, bucker:string, key:string){
@@ -29,5 +31,26 @@ export class BannerService {
                 banner: _key.key
             }
         })
-    }   
+    }
+    
+    async deleteBanner(bucker:string, url:string){
+        const content = await this.filmService.getFilmByUrl(url)
+        if(!content){
+            throw new BadRequestException()
+        }
+        if(!content.banner){
+            return content
+        }
+        
+        await this.s3Service.deleteFile(bucker, content.banner)
+        
+        return this.prismaService.content.update({
+            where: {
+                id: content.id
+            },
+            data: {
+                banner: null
+            }
+        })
+    }
 }
