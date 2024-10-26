@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { createFilmDto } from './dto/createFilm.dto';
-import { updateFilmDto } from './dto/updateFilm.dto';
+import { createContentDto, updateContentDto } from './dto';
+
 
 @Injectable()
-export class FilmService {
+export class ContentService {
     constructor(
         private readonly prismaService:PrismaService
     ){}
 
-    async getFilmByUrl(url:string){
+    async getContentByUrl(url:string){
        return await this.prismaService.content.findFirst({
             where: {
                 url
@@ -17,20 +17,28 @@ export class FilmService {
         })
     }
 
-    async getAll(){
-        return await this.prismaService.content.findMany()
+    async createContent(dto: createContentDto){
+        const content = await this.getContentByUrl(dto.url)
+        if(content){
+            throw new BadRequestException()
+        }
+        return await this.prismaService.content.create({
+            data: {
+                ...dto
+            }
+        })
     }
 
-    async updateFilm(dto:updateFilmDto, url:string){
-        const film = await this.getFilmByUrl(url)
-        if(!film){
+    async updateContent(dto:updateContentDto, url:string){
+        const content = await this.getContentByUrl(url)
+        if(!content){
             throw new BadRequestException()
         }
 
         const validUrl = await this.prismaService.content.findFirst({
             where: {
                 url: dto.url,
-                id: {not: film.id}
+                id: {not: content.id}
             }
         })
 
@@ -40,20 +48,8 @@ export class FilmService {
        
         return await this.prismaService.content.update({
             where: {
-                id: film.id
+                id: content.id
             },
-            data: {
-                ...dto
-            }
-        })
-    }
-
-    async createFilm(dto: createFilmDto){
-        const film = await this.getFilmByUrl(dto.url)
-        if(film){
-            throw new BadRequestException()
-        }
-        return await this.prismaService.content.create({
             data: {
                 ...dto
             }

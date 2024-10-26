@@ -1,6 +1,6 @@
 import { ContentType } from "@prisma/client"
 
-export class createFilmDto {
+export class createContentDto {
     title: string
     type: ContentType
     duration: number
