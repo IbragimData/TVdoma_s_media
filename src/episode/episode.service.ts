@@ -10,6 +10,27 @@ export class EpisodeService {
         private readonly seasonService:SeasonService
     ){}
 
+    async getEpisodeById(id:number){
+        return await this.prismaService.episode.findFirst({
+            where: {
+                id
+            }
+        })
+    }
+
+    async getEpisodesBySeasonId(seasonId:number){
+        const season = await this.seasonService.getSeasonById(seasonId)
+        if(!season){
+            throw new BadRequestException()
+        }
+
+        return await this.prismaService.episode.findMany({
+            where: {
+                seasonId
+            }
+        })
+    }
+
     async createEpisode(dto: createEpisode, seasonId:number){
         const season = await this.seasonService.getSeasonById(seasonId)
         if(!season){
