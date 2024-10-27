@@ -1,11 +1,14 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ContentService } from './content.service';
-import { createContentDto, createSeasonDto, updateContentDto, updateSeasonDto } from './dto';
+import { createContentDto, updateContentDto, } from './dto';
+import { SeasonService } from 'src/season/season.service';
+import { createSeasonDto, updateSeasonDto } from 'src/season/dto';
 
 @Controller('content')
 export class ContentController {
     constructor(
-        private readonly contentService:ContentService
+        private readonly contentService:ContentService,
+        private readonly seasonService:SeasonService
     ){}
     
     @Get(":url")
@@ -34,22 +37,22 @@ export class ContentController {
 
     @Get(":contentUrl/season")
     async getSeason(@Param("contentUrl") contentUrl:string){
-        return await this.contentService.getSeasonByContentUrl(contentUrl)
+        return await this.seasonService.getSeasonByContentUrl(contentUrl)
     }
 
     @Post(":contentUrl/season")
     async createSeason(@Body() dto:createSeasonDto, @Param("contentUrl") contentUrl:string){
-        return await this.contentService.createSeason(dto, contentUrl)
+        return await this.seasonService.createSeason(dto, contentUrl)
     }
 
     @Patch(":contentUrl/season/:seasonId")
-    async updateSeason(@Body() dto:updateSeasonDto, @Param("contentUrl") contentUrl:string, @Param("seasonId", ParseIntPipe) seasonId:number){
-        return await this.contentService.updateSeason(dto, contentUrl, seasonId)
+    async updateSeason(@Body() dto: updateSeasonDto, @Param("contentUrl") contentUrl:string, @Param("seasonId", ParseIntPipe) seasonId:number){
+        return await this.seasonService.updateSeason(dto, contentUrl, seasonId)
     }
 
     @Delete(":contentUrl/season/:seasonId")
     async deleteSeason(@Param("contentUrl") contentUrl:string, @Param("seasonId", ParseIntPipe) seasonId:number){
-        return await this.contentService.deleteSeason( contentUrl, seasonId)
+        return await this.seasonService.deleteSeason( contentUrl, seasonId)
     }
 
 
