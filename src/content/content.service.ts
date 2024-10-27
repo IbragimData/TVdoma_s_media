@@ -107,6 +107,17 @@ export class ContentService {
             throw new BadRequestException()
         }
 
+        const season = await this.prismaService.season.findFirst({
+            where: {
+                id: seasonId,
+                seriesId: content.url
+            }
+        })
+
+        if(!season){
+            throw new BadRequestException()
+        }
+
         return await this.prismaService.season.update({
             where: {
                 id: seasonId,
@@ -116,6 +127,36 @@ export class ContentService {
                 ...dto
             }
         })
+        
+    }
+
+    async deleteSeason(contentUrl:string, seasonId:number){
+        const content = await this.getContentByUrl(contentUrl)
+        if(!content){
+            throw new BadRequestException()
+        }
+
+        const season = await this.prismaService.season.findFirst({
+            where: {
+                id: seasonId,
+                seriesId: content.url
+            }
+        })
+
+        if(!season){
+            throw new BadRequestException()
+        }
+
+        return await this.prismaService.season.delete({
+            where: {
+                id: season.id,
+                seriesId: content.url
+            },
+            select: {
+                id:true
+            }
+        })
+        
         
     }
 

@@ -47,4 +47,10 @@ export class ContentController {
         return await this.contentService.updateSeason(dto, contentUrl, seasonId)
     }
 
+    @Delete(":contentUrl/season/:seasonId")
+    async deleteSeason(@Param("contentUrl") contentUrl:string, @Param("seasonId", ParseIntPipe) seasonId:number){
+        return await this.contentService.deleteSeason( contentUrl, seasonId)
+    }
+
+
 }
