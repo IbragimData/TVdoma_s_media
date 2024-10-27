@@ -11,6 +11,14 @@ export class SeasonService {
         private readonly contentService:ContentService
     ){}
 
+    async getSeasonById(id:number){
+        return await this.prismaService.season.findFirst({
+            where: {
+                id
+            }
+        })
+    }
+
     async getSeasonByContentUrl(contentUrl:string){
         const content = await this.contentService.getContentByUrl(contentUrl)
         if(!content){
@@ -19,7 +27,7 @@ export class SeasonService {
 
         return await this.prismaService.season.findMany({
             where: {
-                seriesId: content.url
+                seriesUrl: content.url
             }
         })
     }
@@ -33,7 +41,7 @@ export class SeasonService {
         return await this.prismaService.season.create({
             data: {
                 ...dto,
-                seriesId: content.url
+                seriesUrl: content.url
             }
         })
         
@@ -48,7 +56,7 @@ export class SeasonService {
         const season = await this.prismaService.season.findFirst({
             where: {
                 id: seasonId,
-                seriesId: content.url
+                seriesUrl: content.url
             }
         })
 
@@ -59,7 +67,7 @@ export class SeasonService {
         return await this.prismaService.season.update({
             where: {
                 id: seasonId,
-                seriesId: content.url
+                seriesUrl: content.url
             },
             data: {
                 ...dto
@@ -77,7 +85,7 @@ export class SeasonService {
         const season = await this.prismaService.season.findFirst({
             where: {
                 id: seasonId,
-                seriesId: content.url
+                seriesUrl: content.url
             }
         })
 
@@ -88,7 +96,7 @@ export class SeasonService {
         return await this.prismaService.season.delete({
             where: {
                 id: season.id,
-                seriesId: content.url
+                seriesUrl: content.url
             },
             select: {
                 id:true

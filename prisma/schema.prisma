@@ -28,18 +28,19 @@ model Content {
 model Season { 
   id        Int      @id @default(autoincrement())
   number    Int      // Номер сезона
-  series    Content   @relation(fields: [seriesId], references: [url])
-  seriesId  String
+  series    Content   @relation(fields: [seriesUrl], references: [url])
+  seriesUrl  String
   episodes  Episode[]
 }
 
 model Episode {
   id        Int      @id @default(autoincrement())
   title     String
+  number Int
   duration  Int      // Продолжительность серии
   season    Season   @relation(fields: [seasonId], references: [id])
   seasonId  Int
-  releaseDate DateTime
+  releaseDate Int
 }
 
 enum ContentType {

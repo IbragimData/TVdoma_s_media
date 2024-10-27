@@ -7,11 +7,12 @@ import { S3Module } from './s3/s3.module';
 import { FilmMediaModule } from './film-media/film-media.module';
 import { ContentModule } from './content/content.module';
 import { SeasonModule } from './season/season.module';
+import { EpisodeModule } from './episode/episode.module';
 
 @Module({
   imports: [PrismaModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MediaModule, BannerModule, S3Module, FilmMediaModule, ContentModule, SeasonModule],
+  }), MediaModule, BannerModule, S3Module, FilmMediaModule, ContentModule, SeasonModule, EpisodeModule],
   controllers: [],
   providers: [],
 })
