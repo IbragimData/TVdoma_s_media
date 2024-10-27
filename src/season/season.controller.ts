@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { createEpisode, updateEpisodeDto } from 'src/episode/dto';
 import { EpisodeService } from 'src/episode/episode.service';
 
@@ -21,5 +21,10 @@ export class SeasonController {
     @Patch(":seasonId/episodes/:episodeId")
     async updateEpisode(@Body() dto:updateEpisodeDto, @Param("seasonId", ParseIntPipe) seasonId: number, @Param("episodeId", ParseIntPipe) episodeId: number){
         return await this.episodeService.updateEpisode(dto, seasonId, episodeId)
+    }
+
+    @Delete(":seasonId/episodes/:episodeId")
+    async deleteEpisode(@Param("seasonId", ParseIntPipe) seasonId: number, @Param("episodeId", ParseIntPipe) episodeId: number){
+        return await this.episodeService.deleteEpisode(seasonId, episodeId)
     }
 }

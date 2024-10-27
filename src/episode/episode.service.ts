@@ -65,5 +65,26 @@ export class EpisodeService {
             }
         })
     }
+
+    async deleteEpisode(seasonId: number, episodeId:number){
+        const episode = await this.prismaService.episode.findFirst({
+            where: {
+                id: episodeId,
+                seasonId
+            }
+        })
+        if(!episode){
+            throw new BadRequestException()
+        }
+        
+        return await this.prismaService.episode.delete({
+            where: {
+                id: episodeId
+            },
+            select: {
+                id: true
+            }
+        })
+    }
 }
 
