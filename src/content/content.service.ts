@@ -87,4 +87,17 @@ export class ContentService {
         })
         
     }
+
+    async getSeasonByContentUrl(contentUrl:string){
+        const content = await this.getContentByUrl(contentUrl)
+        if(!content){
+            throw new BadRequestException()
+        }
+
+        return await this.prismaService.season.findMany({
+            where: {
+                seriesId: content.url
+            }
+        })
+    }
 }

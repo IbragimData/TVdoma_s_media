@@ -37,4 +37,9 @@ export class ContentController {
         return await this.contentService.createSeason(dto, contentUrl)
     }
 
+    @Get(":contentUrl/season")
+    async getSeason(@Param("contentUrl") contentUrl:string){
+        return await this.contentService.getSeasonByContentUrl(contentUrl)
+    }
+
 }
