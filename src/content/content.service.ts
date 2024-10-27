@@ -109,7 +109,8 @@ export class ContentService {
 
         return await this.prismaService.season.update({
             where: {
-                id: seasonId
+                id: seasonId,
+                seriesId: content.url
             },
             data: {
                 ...dto
@@ -117,4 +118,5 @@ export class ContentService {
         })
         
     }
+
 }
