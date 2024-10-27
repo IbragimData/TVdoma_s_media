@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { createContentDto, createSeasonDto, updateContentDto } from './dto';
+import { createContentDto, createSeasonDto, updateContentDto, updateSeasonDto } from './dto';
 
 
 @Injectable()
@@ -73,6 +73,19 @@ export class ContentService {
         })
     }
 
+    async getSeasonByContentUrl(contentUrl:string){
+        const content = await this.getContentByUrl(contentUrl)
+        if(!content){
+            throw new BadRequestException()
+        }
+
+        return await this.prismaService.season.findMany({
+            where: {
+                seriesId: content.url
+            }
+        })
+    }
+
     async createSeason(dto: createSeasonDto, contentUrl:string){
         const content = await this.getContentByUrl(contentUrl)
         if(!content){
@@ -88,16 +101,20 @@ export class ContentService {
         
     }
 
-    async getSeasonByContentUrl(contentUrl:string){
+    async updateSeason(dto: updateSeasonDto, contentUrl:string, seasonId:number){
         const content = await this.getContentByUrl(contentUrl)
         if(!content){
             throw new BadRequestException()
         }
 
-        return await this.prismaService.season.findMany({
+        return await this.prismaService.season.update({
             where: {
-                seriesId: content.url
+                id: seasonId
+            },
+            data: {
+                ...dto
             }
         })
+        
     }
 }

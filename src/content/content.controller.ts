@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ContentService } from './content.service';
-import { createContentDto, createSeasonDto, updateContentDto } from './dto';
+import { createContentDto, createSeasonDto, updateContentDto, updateSeasonDto } from './dto';
 
 @Controller('content')
 export class ContentController {
@@ -32,14 +32,19 @@ export class ContentController {
         return await this.contentService.deleteContent(url)
     }
 
+    @Get(":contentUrl/season")
+    async getSeason(@Param("contentUrl") contentUrl:string){
+        return await this.contentService.getSeasonByContentUrl(contentUrl)
+    }
+
     @Post(":contentUrl/season")
     async createSeason(@Body() dto:createSeasonDto, @Param("contentUrl") contentUrl:string){
         return await this.contentService.createSeason(dto, contentUrl)
     }
 
-    @Get(":contentUrl/season")
-    async getSeason(@Param("contentUrl") contentUrl:string){
-        return await this.contentService.getSeasonByContentUrl(contentUrl)
+    @Patch(":contentUrl/season/:seasonId")
+    async updateSeason(@Body() dto:updateSeasonDto, @Param("contentUrl") contentUrl:string, @Param("seasonId", ParseIntPipe) seasonId:number){
+        return await this.contentService.updateSeason(dto, contentUrl, seasonId)
     }
 
 }
