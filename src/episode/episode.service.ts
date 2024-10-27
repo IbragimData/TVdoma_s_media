@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SeasonService } from 'src/season/season.service';
-import { createEpisode } from './dto';
+import { createEpisode, updateEpisodeDto } from './dto';
 
 @Injectable()
 export class EpisodeService {
@@ -41,6 +41,27 @@ export class EpisodeService {
             data: {
                 ...dto,
                 seasonId
+            }
+        })
+    }
+
+    async updateEpisode(dto:updateEpisodeDto, seasonId: number, episodeId:number){
+        const episode = await this.prismaService.episode.findFirst({
+            where: {
+                id: episodeId,
+                seasonId
+            }
+        })
+        if(!episode){
+            throw new BadRequestException()
+        }
+        
+        return await this.prismaService.episode.update({
+            where: {
+                id: episode.id
+            },
+            data: {
+                ...dto
             }
         })
     }
