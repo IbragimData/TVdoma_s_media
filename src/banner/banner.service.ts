@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import { ContentService } from 'src/content/content.service';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
+import { Stream } from 'stream';
 
 @Injectable()
 export class BannerService {
@@ -54,5 +56,17 @@ export class BannerService {
                 banner: null
             }
         })
+    }
+
+    async getBannerFile(bucker:string, key: string, res:Response){
+        const file = await this.s3Service.getFile(bucker, "banner/" + key);
+    
+        // Устанавливаем заголовки для файла
+        res.set({
+          'Content-Type': file.ContentType,
+          'Content-Length': file.ContentLength,
+        });
+        // Передаем поток данных в response
+        (file.Body as Stream).pipe(res);
     }
 }

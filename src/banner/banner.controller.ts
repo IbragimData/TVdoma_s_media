@@ -1,6 +1,7 @@
-import { Controller, Delete, Param, Patch, RequestTimeoutException, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Patch, RequestTimeoutException, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BannerService } from './banner.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @Controller('banner')
 export class BannerController {
@@ -19,6 +20,12 @@ export class BannerController {
     deleteBanner(@Param("url") url:string){
         const bucker = "account-910"
         return this.bannerService.deleteBanner(bucker, url)
+    }
+
+    @Get(":key")
+    async getBannerFile(@Param("key") key:string, @Res() res:Response){
+        const bucketName = 'account-910';
+        return await this.bannerService.getBannerFile(bucketName, key, res)
     }
 
 }
