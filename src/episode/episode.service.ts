@@ -76,7 +76,7 @@ export class EpisodeService {
         if(!episode){
             throw new BadRequestException()
         }
-        
+
         return await this.prismaService.episode.delete({
             where: {
                 id: episodeId
@@ -87,4 +87,3 @@ export class EpisodeService {
         })
     }
 }
-

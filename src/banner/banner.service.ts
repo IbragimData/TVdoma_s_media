@@ -26,13 +26,14 @@ export class BannerService {
             await this.deleteBanner(bucker, url)
         }
 
-        const _key = await this.s3Service.upload(file, bucker, key)
+        const _key = await this.s3Service.upload(file, bucker, "banner/" + key)
+        const resUpload = _key.key.substring(7)
         return this.prismaService.content.update({
             where: {
                 url
             },
             data: {
-                banner: _key.key
+                banner: resUpload
             }
         })
     }
@@ -43,7 +44,7 @@ export class BannerService {
             throw new BadRequestException()
         }
         
-        await this.s3Service.deleteFile(bucker, content.banner)
+        await this.s3Service.deleteFile(bucker, "banner/" + content.banner)
         
         return this.prismaService.content.update({
             where: {
