@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import { ContentService } from 'src/content/content.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
+import { Stream } from 'stream';
 import { v4 } from 'uuid';
 
 @Injectable()
@@ -56,6 +58,18 @@ export class PosterService {
                 poster: null
             }
         })
+    }
+
+    async getPosterFile(bucker:string, key: string, res:Response){
+        const file = await this.s3Service.getFile(bucker, "poster/" + key);
+        
+        // Устанавливаем заголовки для файла
+        res.set({
+          'Content-Type': file.ContentType,
+          'Content-Length': file.ContentLength,
+        });
+        // Передаем поток данных в response
+        (file.Body as Stream).pipe(res);
     }
 
 }
