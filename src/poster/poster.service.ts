@@ -24,6 +24,10 @@ export class PosterService {
             throw new BadRequestException()
         }
 
+        if(content.poster){
+            await this.deletePoster(bucker, url)
+        }
+
         const _key = await this.s3Service.upload(file, bucker, "poster/" + key)
         const resUpload =  _key.key.substring(7)
         return this.prismaService.content.update({
@@ -42,7 +46,7 @@ export class PosterService {
             throw new BadRequestException()
         }
         
-        await this.s3Service.deleteFile(bucker, "poster/" + content.banner)
+        await this.s3Service.deleteFile(bucker, "poster/" + content.poster)
         
         return this.prismaService.content.update({
             where: {
