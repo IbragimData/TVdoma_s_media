@@ -12,8 +12,7 @@ export class BannerController {
     @UseInterceptors(FileInterceptor("file"))
     async upload(@UploadedFile() file:Express.Multer.File, @Param("url") url:string){
         const bucker = "account-910"
-        const key = new Date().toISOString()
-        return await this.bannerService.uploadBanner(url, file, bucker, key)
+        return await this.bannerService.uploadBanner(url, file, bucker)
     }
 
     @Delete(":url")

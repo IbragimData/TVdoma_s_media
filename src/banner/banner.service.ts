@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { ContentService } from 'src/content/content.service';
-
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
 import { Stream } from 'stream';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class BannerService {
@@ -14,7 +14,8 @@ export class BannerService {
         private readonly contentService:ContentService      
     ){}
 
-    async uploadBanner(url:string, file:Express.Multer.File, bucker:string, key:string){
+    async uploadBanner(url:string, file:Express.Multer.File, bucker:string){
+        const key = v4()
         const content = await this.prismaService.content.findFirst({
             where: {
                 url
