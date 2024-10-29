@@ -19,6 +19,7 @@ model Content {
   title     String
   type      ContentType // 'FILM' или 'SERIES'
   banner String?
+  poster String?
   seasons   Season[]   // Только для сериалов
   duration  Int?       // Продолжительность (для фильмов)
   releaseDate Int? // Дата выхода
