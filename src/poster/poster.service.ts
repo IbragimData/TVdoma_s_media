@@ -35,4 +35,23 @@ export class PosterService {
             }
         })
     }
+
+    async deletePoster(bucker:string, url:string){
+        const content = await this.contentService.getContentByUrl(url)
+        if(!content){
+            throw new BadRequestException()
+        }
+        
+        await this.s3Service.deleteFile(bucker, "poster/" + content.banner)
+        
+        return this.prismaService.content.update({
+            where: {
+                id: content.id
+            },
+            data: {
+                poster: null
+            }
+        })
+    }
+
 }
