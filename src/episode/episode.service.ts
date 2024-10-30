@@ -95,6 +95,10 @@ export class EpisodeService {
             throw new BadRequestException()
         }
 
+        if(episode.media){
+            await this.deleteMedia(episode.id, bucker)
+        }
+
         const _key = await this.s3Service.upload(file, bucker, "media/" + key)
         const resUpload = _key.key.substring(6)
         return await this.prismaService.episode.update({
