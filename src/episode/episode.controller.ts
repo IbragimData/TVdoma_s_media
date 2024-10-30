@@ -1,4 +1,4 @@
-import { Controller, Param, ParseIntPipe, Patch, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Param, ParseIntPipe, Patch, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EpisodeService } from './episode.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -16,5 +16,11 @@ export class EpisodeController {
         const key = v4()
         const bucker = "account-910"
         return await this.episodeService.uploadMedia(id, file, key, bucker)
+    }
+
+    @Delete(":id/media")
+    deleteMedia(@Param("id", ParseIntPipe) id:number){
+        const bucker = "account-910"
+        return this.episodeService.deleteMedia(id, bucker)
     }
 }

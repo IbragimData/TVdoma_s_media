@@ -106,4 +106,27 @@ export class EpisodeService {
             }
         })
     }
+
+    async deleteMedia(id:number, bucker:string){
+        const episode = await this.getEpisodeById(id)
+        if(!episode){
+            throw new BadRequestException()
+        }
+
+        if(!episode.media){
+            return episode
+        }
+
+        await this.s3Service.deleteFile(bucker, "media/" + episode.media)
+
+        return await this.prismaService.episode.update({
+            where: {
+                id: episode.id
+            },
+            data: {
+                media: null
+            }
+        })
+        
+    }
 }
