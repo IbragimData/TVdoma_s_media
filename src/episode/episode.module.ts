@@ -4,9 +4,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SeasonService } from 'src/season/season.service';
 import { ContentService } from 'src/content/content.service';
 import { S3Service } from 'src/s3/s3.service';
+import { EpisodeController } from './episode.controller';
 
 @Module({
   providers: [EpisodeService, PrismaService, SeasonService, ContentService, S3Service],
-  controllers: []
+  controllers: [EpisodeController]
 })
 export class EpisodeModule {}
