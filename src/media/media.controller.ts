@@ -1,28 +1,29 @@
 import { Controller, Get, Param, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { MediaService } from './media.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Stream } from 'stream';
 import { Request, Response } from 'express';
+import { S3Service } from 'src/s3/s3.service';
 
 @Controller('media')
 export class MediaController {
     constructor(
-        private readonly mediaService:MediaService
+        private readonly s3Service:S3Service,
+        
     ){}
     @Post("")
     @UseInterceptors(FileInterceptor("file"))
     async upload(@UploadedFile() file:Express.Multer.File){
         const bucker = "account-910"
         const key = `${Date.now()}-${file.originalname}`
-        const data = await this.mediaService.upload(file, bucker, key)
+        const data = await this.s3Service.upload(file, bucker, key)
         return data
     }
-    @Get('video/:key')
+    @Get(':key')
     async streamVideo(@Param('key') key: string, @Req() req: Request, @Res() res: Response) {
       const bucketName = 'account-910';
       const range = req.headers.range;
     
-      const videoFile = await this.mediaService.getFile(bucketName, key);
+      const videoFile = await this.s3Service.getFile(bucketName, "media/" + key);
     
       if (!videoFile.Body) {
         return res.status(404).send('File not found');
