@@ -21,6 +21,7 @@ model Content {
   banner String?
   poster String?
   seasons   Season[]   // Только для сериалов
+  media String?
   duration  Int?       // Продолжительность (для фильмов)
   releaseDate Int? // Дата выхода
   @@index([url])
@@ -39,9 +40,10 @@ model Episode {
   title     String
   number Int
   duration  Int      // Продолжительность серии
+  releaseDate Int
+  media String?
   season    Season   @relation(fields: [seasonId], references: [id])
   seasonId  Int
-  releaseDate Int
 }
 
 enum ContentType {

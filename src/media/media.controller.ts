@@ -17,19 +17,6 @@ export class MediaController {
         const data = await this.mediaService.upload(file, bucker, key)
         return data
     }
-    @Get(':key')
-    async getFile(@Param('key') key: string, @Res() res: Response) {
-      const bucketName = 'account-910';  // Замените на ваше название бакета
-      const file = await this.mediaService.getFile(bucketName, key);
-  
-      // Устанавливаем заголовки для файла
-      res.set({
-        'Content-Type': file.ContentType,
-        'Content-Length': file.ContentLength,
-      });
-      // Передаем поток данных в response
-      (file.Body as Stream).pipe(res);
-    }
     @Get('video/:key')
     async streamVideo(@Param('key') key: string, @Req() req: Request, @Res() res: Response) {
       const bucketName = 'account-910';
