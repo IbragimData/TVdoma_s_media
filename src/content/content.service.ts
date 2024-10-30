@@ -80,6 +80,10 @@ export class ContentService {
         if(!content){
             throw new BadRequestException()
         }
+
+        if(content.media){
+            await this.deleteFilm(url, bucker)
+        }
         
         const _key = await this.s3Service.upload(file, bucker, "media/" + key)
         const resUpload = _key.key.substring(6)
