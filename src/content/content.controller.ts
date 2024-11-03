@@ -57,24 +57,24 @@ export class ContentController {
         return await this.contentService.deleteContent(url)
     }
 
-    @Get(":contentUrl/season")
-    async getSeason(@Param("contentUrl") contentUrl:string){
-        return await this.seasonService.getSeasonByContentUrl(contentUrl)
+    @Get(":contentId/season")
+    async getSeason(@Param("contentId", ParseIntPipe) contentId:number){
+        return await this.seasonService.getSeasonByContentUrl(contentId)
     }
 
-    @Post(":contentUrl/season")
-    async createSeason(@Body() dto:createSeasonDto, @Param("contentUrl") contentUrl:string){
-        return await this.seasonService.createSeason(dto, contentUrl)
+    @Post(":contentId/season")
+    async createSeason(@Body() dto:createSeasonDto, @Param("contentId", ParseIntPipe) contentId:number){
+        return await this.seasonService.createSeason(dto, contentId)
     }
 
-    @Patch(":contentUrl/season/:seasonId")
-    async updateSeason(@Body() dto: updateSeasonDto, @Param("contentUrl") contentUrl:string, @Param("seasonId", ParseIntPipe) seasonId:number){
-        return await this.seasonService.updateSeason(dto, contentUrl, seasonId)
+    @Patch(":contentId/season/:seasonId")
+    async updateSeason(@Body() dto: updateSeasonDto, @Param("contentId", ParseIntPipe) contentId:number, @Param("seasonId", ParseIntPipe) seasonId:number){
+        return await this.seasonService.updateSeason(dto, contentId, seasonId)
     }
 
-    @Delete(":contentUrl/season/:seasonId")
-    async deleteSeason(@Param("contentUrl") contentUrl:string, @Param("seasonId", ParseIntPipe) seasonId:number){
-        return await this.seasonService.deleteSeason( contentUrl, seasonId)
+    @Delete(":contentId/season/:seasonId")
+    async deleteSeason(@Param("contentUrl", ParseIntPipe) contentId:number, @Param("seasonId", ParseIntPipe) seasonId:number){
+        return await this.seasonService.deleteSeason( contentId, seasonId)
     }
 
     @Patch(":contentUrl/media")

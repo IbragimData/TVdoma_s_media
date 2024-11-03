@@ -30,8 +30,8 @@ model Content {
 model Season { 
   id        Int      @id @default(autoincrement())
   number    Int      // Номер сезона
-  series    Content   @relation(fields: [seriesUrl], references: [url])
-  seriesUrl  String
+  content    Content   @relation(fields: [contentId], references: [id])
+  contentId  Int
   episodes  Episode[]
 }
 

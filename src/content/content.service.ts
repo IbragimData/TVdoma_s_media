@@ -11,6 +11,14 @@ export class ContentService {
         private readonly s3Service:S3Service
     ){}
 
+    async getContentById(id:number){
+        return await this.prismaService.content.findFirst({
+            where: {
+                id
+            }
+        })
+    }
+
     async getContentByUrl(url:string){
        return await this.prismaService.content.findFirst({
             where: {
