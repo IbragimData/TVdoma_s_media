@@ -19,14 +19,16 @@ export class ContentService {
         })
     }
 
-    async createContent(dto: createContentDto){
+    async createContent(dto: createContentDto, banner:string, poster:string){
         const content = await this.getContentByUrl(dto.url)
         if(content){
             throw new BadRequestException()
         }
         return await this.prismaService.content.create({
             data: {
-                ...dto
+                ...dto,
+                banner,
+                poster
             }
         })
     }

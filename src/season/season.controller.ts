@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Upload } from '@aws-sdk/lib-storage';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { AnyFilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 import { createEpisode, updateEpisodeDto } from 'src/episode/dto';
 import { EpisodeService } from 'src/episode/episode.service';
 
@@ -26,5 +28,19 @@ export class SeasonController {
     @Delete(":seasonId/episodes/:episodeId")
     async deleteEpisode(@Param("seasonId", ParseIntPipe) seasonId: number, @Param("episodeId", ParseIntPipe) episodeId: number){
         return await this.episodeService.deleteEpisode(seasonId, episodeId)
+    }
+
+    @Post()
+    @UseInterceptors(FileFieldsInterceptor([
+        {name: "file", maxCount: 1},
+        {name: "file2", maxCount: 1}
+    ]))
+    getAll(@Body() dto: {name:string, age: number}, @UploadedFiles() files: {file?: Express.Multer.File[], file2?: Express.Multer.File[]}){
+        const file = files.file && files.file[0]
+        const file2 = files.file2 && files.file2[0]
+        console.log(file)
+        console.log(file2)
+        console.log(dto)
+        return dto
     }
 }

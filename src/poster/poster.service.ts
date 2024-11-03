@@ -14,32 +14,12 @@ export class PosterService {
         private readonly contentService:ContentService
     ){}
 
-    async uploadPoster(url:string, file:Express.Multer.File, bucker:string){
+    async uploadPoster(file:Express.Multer.File, bucker:string){
         const key = v4()
-        const content = await this.prismaService.content.findFirst({
-            where: {
-                url
-            }
-        })
-
-        if(!content){
-            throw new BadRequestException()
-        }
-
-        if(content.poster){
-            await this.deletePoster(bucker, url)
-        }
 
         const _key = await this.s3Service.upload(file, bucker, "poster/" + key)
         const resUpload =  _key.key.substring(7)
-        return this.prismaService.content.update({
-            where: {
-                url
-            },
-            data: {
-                poster: resUpload
-            }
-        })
+        return resUpload
     }
 
     async deletePoster(bucker:string, url:string){

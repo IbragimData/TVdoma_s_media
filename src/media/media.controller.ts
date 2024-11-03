@@ -10,14 +10,6 @@ export class MediaController {
         private readonly s3Service:S3Service,
         
     ){}
-    @Post("")
-    @UseInterceptors(FileInterceptor("file"))
-    async upload(@UploadedFile() file:Express.Multer.File){
-        const bucker = "account-910"
-        const key = `${Date.now()}-${file.originalname}`
-        const data = await this.s3Service.upload(file, bucker, key)
-        return data
-    }
     @Get(':key')
     async streamVideo(@Param('key') key: string, @Req() req: Request, @Res() res: Response) {
       const bucketName = 'account-910';
