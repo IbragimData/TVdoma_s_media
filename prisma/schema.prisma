@@ -30,7 +30,7 @@ model Content {
 model Season { 
   id        Int      @id @default(autoincrement())
   number    Int      // Номер сезона
-  content    Content   @relation(fields: [contentId], references: [id])
+  content    Content   @relation(fields: [contentId], references: [id], onDelete: Cascade)
   contentId  Int
   episodes  Episode[]
 }
@@ -42,7 +42,7 @@ model Episode {
   duration  Int      // Продолжительность серии
   releaseDate DateTime
   media String?
-  season    Season   @relation(fields: [seasonId], references: [id])
+  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   seasonId  Int
 }
 

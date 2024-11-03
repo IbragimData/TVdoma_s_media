@@ -29,22 +29,34 @@ export class ContentController {
 
     @UseInterceptors(FileFieldsInterceptor([
         {name: "banner", maxCount: 1},
-        {name: "poster", maxCount: 1}
+        {name: "poster", maxCount: 1},
+        {name: "media", maxCount: 1}
     ]))
     @Post()
-    async createContent(@Body() dto:createContentDto, @UploadedFiles() files: {banner? : Express.Multer.File[], poster? : Express.Multer.File[] }){
+    async createContent(@Body() dto:createContentDto, @UploadedFiles() files: {banner? : Express.Multer.File[], poster? : Express.Multer.File[], media?: Express.Multer.File[]}){
+        const content = await this.contentService.getContentByUrl(dto.url)
+        if(content){
+            throw new BadRequestException()
+        }
         const banner = files.banner && files.banner[0]
         const poster = files.poster && files.poster[0]
+        const media = files.media && files.media[0]
+        console.log(media)
         const bucker = "account-910"
         let bannerKey: string
         let posterKey: string
+        let mediaKey:string
         if(banner){
             bannerKey = await this.bannerService.uploadBanner(banner, bucker)
         }
         if(poster){
             posterKey =  await this.posterService.uploadPoster(poster, bucker)
-        } 
-        return await this.contentService.createContent(dto, bannerKey, posterKey)
+        }
+        if(media){
+            mediaKey = await this.contentService.uploadMedia(media, bucker)
+        }
+
+        return await this.contentService.createContent(dto, bannerKey, posterKey, mediaKey)
     }
 
     @Patch(":url")
@@ -77,18 +89,10 @@ export class ContentController {
         return await this.seasonService.deleteSeason( contentId, seasonId)
     }
 
-    @Patch(":contentUrl/media")
-    @UseInterceptors(FileInterceptor("file"))
-    async uploadMedia(@UploadedFile() file:Express.Multer.File, @Param("contentUrl") contentUrl:string){
-        const bucker = "account-910"
-        const key = v4()
-        return await this.contentService.uploadFilm(file, contentUrl, bucker, key )
-    }
-
     @Delete(":contentUrl/media")
-    async deleteFilm(@Param("contentUrl") contentUrl:string){
+    async deleteMedia(@Param("contentUrl") contentUrl:string){
         const bucker = "account-910"
-        return await this.contentService.deleteFilm(contentUrl, bucker)
+        return await this.contentService.deleteMedia(contentUrl, bucker)
     }
 
 }

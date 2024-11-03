@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createContentDto, updateContentDto } from './dto';
 import { S3Service } from 'src/s3/s3.service';
+import { v4 } from 'uuid';
 
 
 @Injectable()
@@ -27,7 +28,7 @@ export class ContentService {
         })
     }
 
-    async createContent(dto: createContentDto, banner:string, poster:string){
+    async createContent(dto: createContentDto, banner:string, poster:string, media:string){
         const content = await this.getContentByUrl(dto.url)
         if(content){
             throw new BadRequestException()
@@ -36,7 +37,8 @@ export class ContentService {
             data: {
                 ...dto,
                 banner,
-                poster
+                poster,
+                media
             }
         })
     }
@@ -85,29 +87,14 @@ export class ContentService {
         })
     }
 
-    async uploadFilm(file:Express.Multer.File, url:string, bucker:string, key:string){
-        const content = await this.getContentByUrl(url)
-        if(!content){
-            throw new BadRequestException()
-        }
-
-        if(content.media){
-            await this.deleteFilm(url, bucker)
-        }
-        
+    async uploadMedia(file:Express.Multer.File,bucker:string){
+        const key = v4()
         const _key = await this.s3Service.upload(file, bucker, "media/" + key)
         const resUpload = _key.key.substring(6)
-        return await this.prismaService.content.update({
-            where: {
-                url: content.url
-            },
-            data: {
-                media: resUpload
-            }
-        })
+        return resUpload
     }
 
-    async deleteFilm(url: string, bucker:string){
+    async deleteMedia(url: string, bucker:string){
         const content = await this.getContentByUrl(url)
         if(!content){
             throw new BadRequestException()
