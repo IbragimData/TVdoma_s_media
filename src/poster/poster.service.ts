@@ -22,12 +22,12 @@ export class PosterService {
         return resUpload
     }
 
-    async deletePoster(bucker:string, url:string){
-        const content = await this.contentService.getContentByUrl(url)
+    async deletePoster(bucker:string, id:number){
+        const content = await this.contentService.getContentById(id)
         if(!content){
             throw new BadRequestException()
         }
-        
+
         await this.s3Service.deleteFile(bucker, "poster/" + content.poster)
         
         return this.prismaService.content.update({

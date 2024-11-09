@@ -95,4 +95,10 @@ export class ContentController {
         return await this.contentService.deleteMedia(contentUrl, bucker)
     }
 
+    @Delete(":contentId/poster")
+    async deletePoster(@Param("contentId", ParseIntPipe) contentId:number){
+        const bucker = "account-910"
+        return await this.posterService.deletePoster(bucker, contentId)
+    }
+
 }

@@ -8,7 +8,7 @@ import { BannerService } from 'src/banner/banner.service';
 import { PosterService } from 'src/poster/poster.service';
 
 @Module({
-  providers: [ContentService, PrismaService, SeasonService, S3Service, BannerService, PosterService],
+  providers: [ContentService, PrismaService, SeasonService, S3Service, BannerService, PosterService, PosterService],
   controllers: [ContentController]
 })
 export class ContentModule {}
