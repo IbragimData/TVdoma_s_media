@@ -22,8 +22,8 @@ export class BannerService {
         return resUpload
     }
     
-    async deleteBanner(bucker:string, url:string){
-        const content = await this.contentService.getContentByUrl(url)
+    async deleteBanner(bucker:string, id:number){
+        const content = await this.contentService.getContentById(id)
         if(!content){
             throw new BadRequestException()
         }

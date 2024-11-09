@@ -3,9 +3,7 @@ import { ContentService } from './content.service';
 import { createContentDto, updateContentDto, } from './dto';
 import { SeasonService } from 'src/season/season.service';
 import { createSeasonDto, updateSeasonDto } from 'src/season/dto';
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
-import { v4 } from 'uuid';
-import { url } from 'inspector';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { BannerService } from 'src/banner/banner.service';
 import { PosterService } from 'src/poster/poster.service';
 
@@ -101,4 +99,9 @@ export class ContentController {
         return await this.posterService.deletePoster(bucker, contentId)
     }
 
+    @Delete(":contentId/banner")
+    async deleteBanner(@Param("contentId", ParseIntPipe) contentId:number){
+        const bucker = "account-910"
+        return await this.bannerService.deleteBanner(bucker, contentId)
+    }
 }
