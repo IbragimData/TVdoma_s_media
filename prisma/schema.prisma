@@ -18,12 +18,16 @@ model Content {
   url String @unique
   title     String
   type      ContentType // 'FILM' или 'SERIES'
+  media String?
   banner String?
   poster String?
-  seasons   Season[]   // Только для сериалов
-  media String?
+  trailer String?
+  titleImage String?
+  ageLimit Int
   duration  Int?       // Продолжительность (для фильмов)
-  releaseDate DateTime? // Дата выхода
+  releaseDate Int // Дата выхода
+  originalTitle String
+  seasons   Season[]   // Только для сериалов
   @@index([url])
 }
 
@@ -45,6 +49,13 @@ model Episode {
   season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   seasonId  Int
 }
+
+model Genre{
+  id Int @id @default(autoincrement())
+  title String
+}
+
+
 
 
 
