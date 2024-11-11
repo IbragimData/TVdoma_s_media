@@ -18,7 +18,6 @@ export class createContentDto {
     url: string
     @Type(()=>Number)
     @IsNumber()
-    @MinLength(4)
     ageLimit: number
     @IsString()
     @MinLength(1)

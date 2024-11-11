@@ -113,4 +113,10 @@ export class ContentController {
         const bucker = "account-910"
         return await this.bannerService.deleteBanner(bucker, contentId)
     }
+
+    @Delete(":contentId/title-image")
+    async deleteTitleImage(@Param("contentId", ParseIntPipe) contentId:number){
+        const bucker = "account-910"
+        return await this.titleImageService.deleteTitleImage(bucker, contentId)
+    }
 }
