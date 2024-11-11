@@ -6,6 +6,8 @@ import { createSeasonDto, updateSeasonDto } from 'src/season/dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { BannerService } from 'src/banner/banner.service';
 import { PosterService } from 'src/poster/poster.service';
+import { title } from 'process';
+import { TitleImageService } from 'src/title-image/title-image.service';
 
 @Controller('content')
 export class ContentController {
@@ -13,7 +15,8 @@ export class ContentController {
         private readonly contentService:ContentService,
         private readonly seasonService:SeasonService,
         private readonly bannerService:BannerService,
-        private readonly posterService:PosterService
+        private readonly posterService:PosterService,
+        private readonly titleImageService:TitleImageService
     ){}
     
     @Get(":url")
@@ -28,10 +31,11 @@ export class ContentController {
     @UseInterceptors(FileFieldsInterceptor([
         {name: "banner", maxCount: 1},
         {name: "poster", maxCount: 1},
-        {name: "media", maxCount: 1}
+        {name: "media", maxCount: 1},
+        {name: "titleImage", maxCount: 1}
     ]))
     @Post()
-    async createContent(@Body() dto:createContentDto, @UploadedFiles() files: {banner? : Express.Multer.File[], poster? : Express.Multer.File[], media?: Express.Multer.File[]}){
+    async createContent(@Body() dto:createContentDto, @UploadedFiles() files: {banner? : Express.Multer.File[], poster? : Express.Multer.File[], media?: Express.Multer.File[], titleImage?: Express.Multer.File[]}){
         const content = await this.contentService.getContentByUrl(dto.url)
         if(content){
             throw new BadRequestException()
@@ -39,11 +43,13 @@ export class ContentController {
         const banner = files.banner && files.banner[0]
         const poster = files.poster && files.poster[0]
         const media = files.media && files.media[0]
+        const titleImage = files.titleImage && files.titleImage[0]
         console.log(media)
         const bucker = "account-910"
         let bannerKey: string
         let posterKey: string
         let mediaKey:string
+        let titleImageKey:string
         if(banner){
             bannerKey = await this.bannerService.uploadBanner(banner, bucker)
         }
@@ -53,8 +59,11 @@ export class ContentController {
         if(media){
             mediaKey = await this.contentService.uploadMedia(media, bucker)
         }
+        if(titleImage){
+            titleImageKey = await this.titleImageService.uploadTitleImage(media, bucker)
+        }
 
-        return await this.contentService.createContent(dto, bannerKey, posterKey, mediaKey)
+        return await this.contentService.createContent(dto, bannerKey, posterKey, mediaKey, titleImageKey)
     }
 
     @Patch(":url")

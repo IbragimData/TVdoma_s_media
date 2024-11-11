@@ -28,7 +28,7 @@ export class ContentService {
         })
     }
 
-    async createContent(dto: createContentDto, banner:string, poster:string, media:string){
+    async createContent(dto: createContentDto, banner:string, poster:string, media:string, titleImage:string){
         const content = await this.getContentByUrl(dto.url)
         if(content){
             throw new BadRequestException()
@@ -38,7 +38,8 @@ export class ContentService {
                 ...dto,
                 banner,
                 poster,
-                media
+                media,
+                titleImage
             }
         })
     }
