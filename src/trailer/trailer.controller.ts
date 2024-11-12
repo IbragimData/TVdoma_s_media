@@ -1,17 +1,16 @@
 import { Controller, Get, Param, Res } from '@nestjs/common';
-import { TitleImageService } from './title-image.service';
+import { TrailerService } from './trailer.service';
 import { Response } from 'express';
 
-@Controller('title-image')
-export class TitleImageController {
+@Controller('trailer')
+export class TrailerController {
     constructor(
-        private readonly titleImageService:TitleImageService
+        private readonly trailerService:TrailerService
     ){}
-
     @Get(":key")
     async getPosterFile(@Param("key") key:string, @Res() res:Response){
         const bucketName = "account-910"
         console.log(bucketName)
-        return await this.titleImageService.getTitleImageFile(bucketName, key, res)
+        return await this.trailerService.getTrailerFile(bucketName, key, res)
     }
 }

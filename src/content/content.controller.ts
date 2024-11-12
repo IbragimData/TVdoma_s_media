@@ -8,6 +8,7 @@ import { BannerService } from 'src/banner/banner.service';
 import { PosterService } from 'src/poster/poster.service';
 import { title } from 'process';
 import { TitleImageService } from 'src/title-image/title-image.service';
+import { TrailerService } from 'src/trailer/trailer.service';
 
 @Controller('content')
 export class ContentController {
@@ -16,7 +17,8 @@ export class ContentController {
         private readonly seasonService:SeasonService,
         private readonly bannerService:BannerService,
         private readonly posterService:PosterService,
-        private readonly titleImageService:TitleImageService
+        private readonly titleImageService:TitleImageService,
+        private readonly trailerService:TrailerService,
     ){}
     
     @Get(":url")
@@ -32,10 +34,11 @@ export class ContentController {
         {name: "banner", maxCount: 1},
         {name: "poster", maxCount: 1},
         {name: "media", maxCount: 1},
-        {name: "titleImage", maxCount: 1}
+        {name: "titleImage", maxCount: 1},
+        {name: "trailer", maxCount: 1}
     ]))
     @Post()
-    async createContent(@Body() dto:createContentDto, @UploadedFiles() files: {banner? : Express.Multer.File[], poster? : Express.Multer.File[], media?: Express.Multer.File[], titleImage?: Express.Multer.File[]}){
+    async createContent(@Body() dto:createContentDto, @UploadedFiles() files: {banner? : Express.Multer.File[], poster? : Express.Multer.File[], media?: Express.Multer.File[], titleImage?: Express.Multer.File[], trailer:Express.Multer.File[]}){
         const content = await this.contentService.getContentByUrl(dto.url)
         if(content){
             throw new BadRequestException()
@@ -44,12 +47,14 @@ export class ContentController {
         const poster = files.poster && files.poster[0]
         const media = files.media && files.media[0]
         const titleImage = files.titleImage && files.titleImage[0]
+        const trailer = files.trailer && files.trailer[0]
         console.log(media)
         const bucker = "account-910"
         let bannerKey: string
         let posterKey: string
         let mediaKey:string
         let titleImageKey:string
+        let trailerKey:string
         if(banner){
             bannerKey = await this.bannerService.uploadBanner(banner, bucker)
         }
@@ -62,8 +67,11 @@ export class ContentController {
         if(titleImage){
             titleImageKey = await this.titleImageService.uploadTitleImage(media, bucker)
         }
+        if(trailer){
+            trailerKey = await this.trailerService.uploadTrailer(trailer, bucker)
+        }
 
-        return await this.contentService.createContent(dto, bannerKey, posterKey, mediaKey, titleImageKey)
+        return await this.contentService.createContent(dto, bannerKey, posterKey, mediaKey, titleImageKey, trailerKey)
     }
 
     @Patch(":url")
@@ -119,4 +127,12 @@ export class ContentController {
         const bucker = "account-910"
         return await this.titleImageService.deleteTitleImage(bucker, contentId)
     }
+    
+
+    @Delete(":contentId/trailer")
+    async deleteTrailer(@Param("contentId", ParseIntPipe) contentId:number){
+        const bucker = "account-910"
+        return await this.trailerService.deleteTrailer(bucker, contentId)
+    }
+
 }
