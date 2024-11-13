@@ -90,8 +90,10 @@ export class ContentController {
         let trailerKey:string
         const titleImage = files.titleImage && files.titleImage[0]
         let titleImageKey:string
-        const poster = files.titleImage && files.titleImage[0]
+        const poster = files.poster && files.poster[0]
         let posterKey:string 
+        const media = files.media && files.media[0]
+        let mediaKey:string 
         const content = await this.contentService.getContentByUrl(url)
         if(!content){
             throw new BadRequestException()
@@ -106,9 +108,12 @@ export class ContentController {
             titleImageKey = await this.titleImageService.updateTitleImage(content.id, bucker, titleImage)
         }
         if(poster){
-            posterKey = await this.posterService.updatePoster(content.id, bucker, titleImage)
+            posterKey = await this.posterService.updatePoster(content.id, bucker, poster)
         }
-        return await this.contentService.updateContent(dto, url, bannerKey, trailerKey, titleImageKey, posterKey)
+        if(media){
+            mediaKey = await this.contentService.updateMedia(content.id, bucker, titleImage)
+        }
+        return await this.contentService.updateContent(dto, url, bannerKey, trailerKey, titleImageKey, posterKey, mediaKey)
         
     }
 
@@ -137,10 +142,11 @@ export class ContentController {
         return await this.seasonService.deleteSeason( contentId, seasonId)
     }
 
-    @Delete(":contentUrl/media")
-    async deleteMedia(@Param("contentUrl") contentUrl:string){
+    @Delete(":contentId/media")
+    async deleteMedia(@Param("contentId", ParseIntPipe) contentId:number){
+        console.log(contentId)
         const bucker = "account-910"
-        return await this.contentService.deleteMedia(contentUrl, bucker)
+        return await this.contentService.deleteMedia(contentId, bucker)
     }
 
     @Delete(":contentId/poster")
