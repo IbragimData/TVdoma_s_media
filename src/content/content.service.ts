@@ -30,6 +30,7 @@ export class ContentService {
 
     async createContent(dto: createContentDto, banner:string, poster:string, media:string, titleImage:string, trailer:string){
         const content = await this.getContentByUrl(dto.url)
+        console.log(dto)
         if(content){
             throw new BadRequestException()
         }
@@ -45,29 +46,35 @@ export class ContentService {
         })
     }
 
-    async updateContent(dto:updateContentDto, url:string){
+    async updateContent(dto:updateContentDto, url:string, banner:string){
         const content = await this.getContentByUrl(url)
         if(!content){
             throw new BadRequestException()
         }
 
-        const validUrl = await this.prismaService.content.findFirst({
-            where: {
-                url: dto.url,
-                id: {not: content.id}
+        if(dto.url){
+            const validUrl = await this.prismaService.content.findFirst({
+                where: {
+                    url: dto.url,
+                    id: {not: content.id}
+                }
+            })
+            if(validUrl){
+                throw new BadRequestException()
             }
-        })
-
-        if(validUrl){
-            throw new BadRequestException()
         }
+
+
+
+
        
         return await this.prismaService.content.update({
             where: {
                 id: content.id
             },
             data: {
-                ...dto
+                ...dto,
+                banner
             }
         })
     }

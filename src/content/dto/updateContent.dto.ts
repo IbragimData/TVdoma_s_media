@@ -1,12 +1,11 @@
 import { ContentType } from "@prisma/client"
 import { Type } from "class-transformer";
-import { IsNumber, IsString, MinLength } from "class-validator";
+import { IsNumber, IsOptional, IsString, MinLength } from "class-validator";
 
 export class updateContentDto {
     @IsString()
     @MinLength(1)
     title: string
-    type: ContentType
     @Type(()=>Number)
     @IsNumber()
     duration: number
@@ -15,12 +14,13 @@ export class updateContentDto {
     releaseDate: number;
     @IsString()
     @MinLength(2)
-    url: string
+    @IsOptional()
+    url?: string
     @Type(()=>Number)
     @IsNumber()
-    @MinLength(4)
     ageLimit: number
     @IsString()
     @MinLength(1)
     originalTitle: string
+    type: ContentType
 }

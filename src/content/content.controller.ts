@@ -75,8 +75,26 @@ export class ContentController {
     }
 
     @Patch(":url")
-    async updateContent(@Body() dto:updateContentDto, @Param("url") url:string){
-        return await this.contentService.updateContent(dto, url)
+    @UseInterceptors(FileFieldsInterceptor([
+        {name: "banner", maxCount: 1},
+        {name: "poster", maxCount: 1},
+        {name: "media", maxCount: 1},
+        {name: "titleImage", maxCount: 1},
+        {name: "trailer", maxCount: 1}
+    ]))
+    async updateContent(@Body() dto:updateContentDto, @Param("url") url:string,@UploadedFiles() files: {banner? : Express.Multer.File[], poster? : Express.Multer.File[], media?: Express.Multer.File[], titleImage?: Express.Multer.File[], trailer:Express.Multer.File[]}){
+        const bucker = "account-910"
+        const banner = files.banner && files.banner[0]
+        let bannerKey:string
+        const content = await this.contentService.getContentByUrl(url)
+        if(!content){
+            throw new BadRequestException()
+        }
+        if(banner){
+            bannerKey = await this.bannerService.updateBanner(content.id, bucker, banner)
+        }
+        return await this.contentService.updateContent(dto, url, bannerKey)
+        return "ibragim"
     }
 
     @Delete(":url")

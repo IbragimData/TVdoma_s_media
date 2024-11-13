@@ -6,7 +6,6 @@ export class createContentDto {
     @IsString()
     @MinLength(1)
     title: string
-    type: ContentType
     @Type(()=>Number)
     @IsNumber()
     duration: number
@@ -22,4 +21,5 @@ export class createContentDto {
     @IsString()
     @MinLength(1)
     originalTitle: string
+    type: ContentType
 }
