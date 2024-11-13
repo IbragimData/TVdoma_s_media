@@ -52,4 +52,18 @@ export class PosterService {
         (file.Body as Stream).pipe(res);
     }
 
+    async updatePoster(id:number, bucker: string, file:Express.Multer.File){
+        const content = await this.contentService.getContentById(id)
+        if(!content){
+            throw new BadRequestException()
+        }
+
+        if(content.poster){
+            await this.deletePoster(bucker, content.id)
+        }
+
+        const key = await this.uploadPoster(file, bucker)
+        return key
+    }
+
 }

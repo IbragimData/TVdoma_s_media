@@ -86,6 +86,12 @@ export class ContentController {
         const bucker = "account-910"
         const banner = files.banner && files.banner[0]
         let bannerKey:string
+        const trailer = files.trailer && files.trailer[0]
+        let trailerKey:string
+        const titleImage = files.titleImage && files.titleImage[0]
+        let titleImageKey:string
+        const poster = files.titleImage && files.titleImage[0]
+        let posterKey:string 
         const content = await this.contentService.getContentByUrl(url)
         if(!content){
             throw new BadRequestException()
@@ -93,8 +99,17 @@ export class ContentController {
         if(banner){
             bannerKey = await this.bannerService.updateBanner(content.id, bucker, banner)
         }
-        return await this.contentService.updateContent(dto, url, bannerKey)
-        return "ibragim"
+        if(trailer){
+            trailerKey = await this.trailerService.updateTrailer(content.id, bucker, trailer)
+        }
+        if(titleImage){
+            titleImageKey = await this.titleImageService.updateTitleImage(content.id, bucker, titleImage)
+        }
+        if(poster){
+            posterKey = await this.posterService.updatePoster(content.id, bucker, titleImage)
+        }
+        return await this.contentService.updateContent(dto, url, bannerKey, trailerKey, titleImageKey, posterKey)
+        
     }
 
     @Delete(":url")

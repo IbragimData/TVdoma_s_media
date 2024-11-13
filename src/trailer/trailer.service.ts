@@ -52,4 +52,18 @@ export class TrailerService {
         (file.Body as Stream).pipe(res);
     }
 
+    async updateTrailer(id:number, bucker: string, file:Express.Multer.File){
+        const content = await this.contentService.getContentById(id)
+        if(!content){
+            throw new BadRequestException()
+        }
+
+        if(content.trailer){
+            await this.deleteTrailer(bucker, content.id)
+        }
+
+        const key = await this.uploadTrailer(file, bucker)
+        return key
+    }
+
 }

@@ -46,7 +46,7 @@ export class ContentService {
         })
     }
 
-    async updateContent(dto:updateContentDto, url:string, banner:string){
+    async updateContent(dto:updateContentDto, url:string, banner:string, trailer:string, titleImage:string, poster:string){
         const content = await this.getContentByUrl(url)
         if(!content){
             throw new BadRequestException()
@@ -63,10 +63,6 @@ export class ContentService {
                 throw new BadRequestException()
             }
         }
-
-
-
-
        
         return await this.prismaService.content.update({
             where: {
@@ -74,7 +70,10 @@ export class ContentService {
             },
             data: {
                 ...dto,
-                banner
+                banner,
+                trailer,
+                titleImage,
+                poster
             }
         })
     }

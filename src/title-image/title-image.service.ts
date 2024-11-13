@@ -52,4 +52,18 @@ export class TitleImageService {
         (file.Body as Stream).pipe(res);
     }
 
+    async updateTitleImage(id:number, bucker: string, file:Express.Multer.File){
+        const content = await this.contentService.getContentById(id)
+        if(!content){
+            throw new BadRequestException()
+        }
+
+        if(content.titleImage){
+            await this.deleteTitleImage(bucker, content.id)
+        }
+
+        const key = await this.uploadTitleImage(file, bucker)
+        return key
+    }
+
 }
