@@ -6,6 +6,21 @@ export class updateContentDto {
     @IsString()
     @MinLength(1)
     title: string
+    @IsString()
+    @MinLength(1)
+    originalTitle: string
+    @IsString()
+    @MinLength(1)
+    description:string
+    @IsString()
+    @MinLength(1)
+    shortDescription:string
+    @Type(()=>Number)
+    @IsNumber()
+    ageLimit: number
+    @IsString()
+    @MinLength(1)
+    country: string
     @Type(()=>Number)
     @IsNumber()
     duration: number
@@ -14,13 +29,6 @@ export class updateContentDto {
     releaseDate: number;
     @IsString()
     @MinLength(2)
-    @IsOptional()
     url?: string
-    @Type(()=>Number)
-    @IsNumber()
-    ageLimit: number
-    @IsString()
-    @MinLength(1)
-    originalTitle: string
     type: ContentType
 }

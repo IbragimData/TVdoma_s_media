@@ -17,13 +17,16 @@ model Content {
   id Int @id @default(autoincrement())
   url String @unique
   title     String
+  shortDescription String
+  description String
+  ageLimit Int
+  country String
   type      ContentType // 'FILM' или 'SERIES'
   media String?
   banner String?
   poster String?
   trailer String?
   titleImage String?
-  ageLimit Int
   duration  Int?       // Продолжительность (для фильмов)
   releaseDate Int // Дата выхода
   originalTitle String

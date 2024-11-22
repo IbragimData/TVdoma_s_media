@@ -6,6 +6,21 @@ export class createContentDto {
     @IsString()
     @MinLength(1)
     title: string
+    @IsString()
+    @MinLength(1)
+    originalTitle: string
+    @IsString()
+    @MinLength(1)
+    description:string
+    @IsString()
+    @MinLength(1)
+    shortDescription:string
+    @Type(()=>Number)
+    @IsNumber()
+    ageLimit: number
+    @IsString()
+    @MinLength(1)
+    country: string
     @Type(()=>Number)
     @IsNumber()
     duration: number
@@ -15,11 +30,6 @@ export class createContentDto {
     @IsString()
     @MinLength(2)
     url: string
-    @Type(()=>Number)
-    @IsNumber()
-    ageLimit: number
-    @IsString()
-    @MinLength(1)
-    originalTitle: string
     type: ContentType
+
 }
