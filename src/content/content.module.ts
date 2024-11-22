@@ -10,7 +10,7 @@ import { TitleImageService } from 'src/title-image/title-image.service';
 import { TrailerService } from 'src/trailer/trailer.service';
 
 @Module({
-  providers: [ContentService, PrismaService, SeasonService, S3Service, BannerService, PosterService, PosterService, TitleImageService, TrailerService],
+  providers: [ContentService, PrismaService, SeasonService, S3Service, BannerService, PosterService, TitleImageService, TrailerService],
   controllers: [ContentController]
 })
 export class ContentModule {}
