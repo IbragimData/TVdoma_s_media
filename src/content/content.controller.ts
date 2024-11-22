@@ -22,6 +22,7 @@ import { PosterService } from 'src/poster/poster.service';
 import { title } from 'process';
 import { TitleImageService } from 'src/title-image/title-image.service';
 import { TrailerService } from 'src/trailer/trailer.service';
+import { GenreService } from 'src/genre/genre.service';
 
 @Controller('content')
 export class ContentController {
@@ -32,6 +33,7 @@ export class ContentController {
     private readonly posterService: PosterService,
     private readonly titleImageService: TitleImageService,
     private readonly trailerService: TrailerService,
+    private readonly genreService: GenreService,
   ) {}
 
   @Get(':url')
@@ -209,11 +211,11 @@ export class ContentController {
     if (content.titleImage) {
       await this.titleImageService.deleteTitleImage(bucker, content.id);
     }
-    if(content.trailer){
-        await this.trailerService.deleteTrailer(bucker, content.id)
+    if (content.trailer) {
+      await this.trailerService.deleteTrailer(bucker, content.id);
     }
-    if(content.media){
-        await this.contentService.deleteMedia(content.id, bucker)
+    if (content.media) {
+      await this.contentService.deleteMedia(content.id, bucker);
     }
     return await this.contentService.deleteContent(url);
   }
@@ -277,5 +279,21 @@ export class ContentController {
   async deleteTrailer(@Param('contentId', ParseIntPipe) contentId: number) {
     const bucker = 'account-910';
     return await this.trailerService.deleteTrailer(bucker, contentId);
+  }
+
+  @Post('genre/:contentId/add-multiple')
+  async addMultipleGenresToContent(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @Body('genreIds') genreIds: number[],
+  ) {
+    return this.genreService.addMultipleGenresToContent(contentId, genreIds);
+  }
+
+  @Delete('genre/:contentId/:genreId')
+  async deleteGenreFromContent(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @Param('genreId', ParseIntPipe) genreId: number,
+  ) {
+    return this.genreService.deleteGenreFromContent(contentId, genreId);
   }
 }

@@ -8,9 +8,10 @@ import { BannerService } from 'src/banner/banner.service';
 import { PosterService } from 'src/poster/poster.service';
 import { TitleImageService } from 'src/title-image/title-image.service';
 import { TrailerService } from 'src/trailer/trailer.service';
+import { GenreService } from 'src/genre/genre.service';
 
 @Module({
-  providers: [ContentService, PrismaService, SeasonService, S3Service, BannerService, PosterService, TitleImageService, TrailerService],
+  providers: [ContentService, PrismaService, SeasonService, S3Service, BannerService, PosterService, TitleImageService, TrailerService, GenreService],
   controllers: [ContentController]
 })
 export class ContentModule {}
