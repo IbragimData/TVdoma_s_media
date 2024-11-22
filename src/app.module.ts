@@ -10,11 +10,12 @@ import { EpisodeModule } from './episode/episode.module';
 import { PosterModule } from './poster/poster.module';
 import { TitleImageModule } from './title-image/title-image.module';
 import { TrailerModule } from './trailer/trailer.module';
+import { GenreModule } from './genre/genre.module';
 
 @Module({
   imports: [PrismaModule, ConfigModule.forRoot({
     isGlobal: true
-  }), MediaModule, BannerModule, S3Module, ContentModule, SeasonModule, EpisodeModule, PosterModule, TitleImageModule, TrailerModule],
+  }), MediaModule, BannerModule, S3Module, ContentModule, SeasonModule, EpisodeModule, PosterModule, TitleImageModule, TrailerModule, GenreModule],
   controllers: [],
   providers: [],
 })

@@ -31,6 +31,7 @@ model Content {
   releaseDate Int // Дата выхода
   originalTitle String
   seasons   Season[]   // Только для сериалов
+  genre Genre[] @relation("ContentGenres")
   @@index([url])
 }
 
@@ -56,8 +57,8 @@ model Episode {
 model Genre{
   id Int @id @default(autoincrement())
   title String
+  contents Content[] @relation("ContentGenres")
 }
-
 
 
 
