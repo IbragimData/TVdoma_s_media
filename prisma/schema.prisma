@@ -57,7 +57,9 @@ model Episode {
 model Genre{
   id Int @id @default(autoincrement())
   title String @unique()
+  rusTitle String?
   contents Content[] @relation("ContentGenres")
+  @@index([title])
 }
 
 

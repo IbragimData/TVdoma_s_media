@@ -1,8 +1,7 @@
 import { BadRequestException, Get, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { genreDto } from './dto/genre.dto';
+import { genreDto } from './dto';
 import { ContentService } from 'src/content/content.service';
-import { title } from 'process';
 
 @Injectable()
 export class GenreService {
@@ -15,8 +14,8 @@ export class GenreService {
     return this.prismaService.genre.findMany();
   }
 
-  async getGenreById(id: number) {
-    return this.prismaService.genre.findUnique({ where: { id } });
+  async getGenreById(title: string) {
+    return this.prismaService.genre.findUnique({ where: { title } });
   }
 
   async createGenre(genreDto: genreDto) {

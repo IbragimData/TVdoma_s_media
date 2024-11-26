@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
 import { GenreService } from './genre.service';
-import { genreDto } from './dto/genre.dto';
+import { genreDto } from './dto';
 
 
 @Controller('genre')
@@ -12,9 +12,9 @@ export class GenreController {
     return this.genreService.getAllGenres();
   }
 
-  @Get(':id')
-  async getGenreById(@Param('id') id: number) {
-    return this.genreService.getGenreById(id);
+  @Get(':genre')
+  async getGenreById(@Param('genre') genre: string) {
+    return this.genreService.getGenreById(genre);
   }
 
   @Post()
