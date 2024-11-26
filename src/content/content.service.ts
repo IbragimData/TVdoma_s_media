@@ -3,6 +3,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { createContentDto, updateContentDto } from './dto';
 import { S3Service } from 'src/s3/s3.service';
 import { v4 } from 'uuid';
+import { filterContentDto } from './dto/filterContent.dto';
+import { time } from 'console';
+import { title } from 'process';
 
 @Injectable()
 export class ContentService {
@@ -10,6 +13,55 @@ export class ContentService {
     private readonly prismaService: PrismaService,
     private readonly s3Service: S3Service,
   ) {}
+
+  async getMany(dto: filterContentDto) {
+    const where: any = {};
+
+    if(dto.type){
+      where.type = dto.type
+    }
+
+    if (dto.genre) {
+      const genre = await this.prismaService.genre.findFirst({
+        where: {
+          title: dto.genre,
+        },
+      });
+      if(!genre){
+        throw new BadRequestException()
+      }
+      where.genres = {
+        some: {
+          id: genre.id,
+        },
+      };
+    }
+
+    if(dto.releaseDate){
+      where.releaseDate = dto.releaseDate
+    }
+    const pageSize = 15
+    const skip = (dto.page - 1) * pageSize
+
+    const movies = await this.prismaService.content.findMany({
+      where,
+      take: pageSize,
+      skip,
+      include: {
+        genres: true
+      }
+    })
+
+    const totalMovie = await this.prismaService.content.count({
+      where
+    })
+
+    return {
+      movies,
+      totalPages: Math.ceil(totalMovie / pageSize)
+    }
+    
+  }
 
   async getContentById(id: number) {
     return await this.prismaService.content.findFirst({

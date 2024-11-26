@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
@@ -23,6 +24,7 @@ import { title } from 'process';
 import { TitleImageService } from 'src/title-image/title-image.service';
 import { TrailerService } from 'src/trailer/trailer.service';
 import { GenreService } from 'src/genre/genre.service';
+import { filterContentDto } from './dto/filterContent.dto';
 
 @Controller('content')
 export class ContentController {
@@ -35,6 +37,14 @@ export class ContentController {
     private readonly trailerService: TrailerService,
     private readonly genreService: GenreService,
   ) {}
+
+
+  @Get()
+  getContent(
+    @Query() dto: filterContentDto
+  ){  
+    return this.contentService.getMany(dto)
+  }
 
   @Get(':url')
   async getContentByUrl(@Param('url') url: string) {
