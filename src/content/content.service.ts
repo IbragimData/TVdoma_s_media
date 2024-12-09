@@ -89,7 +89,6 @@ export class ContentService {
     trailer: string,
   ) {
     const content = await this.getContentByUrl(dto.url);
-    console.log(dto);
     if (content) {
       throw new BadRequestException();
     }

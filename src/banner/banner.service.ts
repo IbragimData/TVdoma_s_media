@@ -14,12 +14,28 @@ export class BannerService {
         private readonly contentService:ContentService      
     ){}
 
-    async uploadBanner(file:Express.Multer.File, bucker:string){
+    async uploadBanner(file:Express.Multer.File, bucker:string, contentId: number){
+        const content = await this.contentService.getContentById(contentId)
+        if(!content){
+            throw new BadRequestException()
+        }
+        if(content.banner){
+            await this.deleteBanner(bucker, content.id)
+        }
+        
         const key = v4()
-
         const _key = await this.s3Service.upload(file, bucker, "banner/" + key)
         const resUpload = _key.key.substring(7)
-        return resUpload
+        
+        const newContent = this.prismaService.content.update({
+                where: {
+                    id: content.id
+                },
+                data: {
+                    banner: resUpload
+                }
+        })
+        return newContent
     }
     
     async deleteBanner(bucker:string, id:number){
@@ -62,7 +78,7 @@ export class BannerService {
             await this.deleteBanner(bucker, content.id)
         }
 
-        const key = await this.uploadBanner(file, bucker)
+        const key = await this.uploadBanner(file, bucker, content.id)
         return key
     }
 

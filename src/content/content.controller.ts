@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -80,21 +79,16 @@ export class ContentController {
     if (content) {
       throw new BadRequestException();
     }
-    const banner = files.banner && files.banner[0];
     const poster = files.poster && files.poster[0];
     const media = files.media && files.media[0];
     const titleImage = files.titleImage && files.titleImage[0];
     const trailer = files.trailer && files.trailer[0];
-    console.log(media);
     const bucker = 'account-910';
     let bannerKey: string;
     let posterKey: string;
     let mediaKey: string;
     let titleImageKey: string;
     let trailerKey: string;
-    if (banner) {
-      bannerKey = await this.bannerService.uploadBanner(banner, bucker);
-    }
     if (poster) {
       posterKey = await this.posterService.uploadPoster(poster, bucker);
     }
@@ -144,7 +138,6 @@ export class ContentController {
     },
   ) {
     const bucker = 'account-910';
-    const banner = files.banner && files.banner[0];
     let bannerKey: string;
     const trailer = files.trailer && files.trailer[0];
     let trailerKey: string;
@@ -157,13 +150,6 @@ export class ContentController {
     const content = await this.contentService.getContentByUrl(url);
     if (!content) {
       throw new BadRequestException();
-    }
-    if (banner) {
-      bannerKey = await this.bannerService.updateBanner(
-        content.id,
-        bucker,
-        banner,
-      );
     }
     if (trailer) {
       trailerKey = await this.trailerService.updateTrailer(
@@ -271,6 +257,24 @@ export class ContentController {
   async deletePoster(@Param('contentId', ParseIntPipe) contentId: number) {
     const bucker = 'account-910';
     return await this.posterService.deletePoster(bucker, contentId);
+  }
+  
+
+  @UseInterceptors(FileFieldsInterceptor([
+    {name: "banner", maxCount: 1}
+  ]))
+  @Post(':contentId/banner')
+  async uploadBanner(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {banner?: Express.Multer.File[]; }) {
+    const bucker = 'account-910';
+    const content = await this.contentService.getContentById(contentId)
+    if(!content){
+      throw new BadRequestException()
+    }
+    const banner = files.banner[0]
+    if(!banner){
+      throw new BadRequestException()
+    }
+    return await this.bannerService.uploadBanner(banner, bucker, contentId);
   }
 
   @Delete(':contentId/banner')
