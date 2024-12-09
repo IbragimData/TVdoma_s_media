@@ -24,6 +24,8 @@ export class createContentDto {
     @Type(()=>Number)
     @IsNumber()
     duration: number
+    @IsString()
+    trailerDuration: string
     @Type(()=>Number)
     @IsNumber()
     releaseDate: number;

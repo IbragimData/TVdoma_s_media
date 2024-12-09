@@ -4,8 +4,6 @@ import { createContentDto, updateContentDto } from './dto';
 import { S3Service } from 'src/s3/s3.service';
 import { v4 } from 'uuid';
 import { filterContentDto } from './dto/filterContent.dto';
-import { time } from 'console';
-import { title } from 'process';
 
 @Injectable()
 export class ContentService {
@@ -46,10 +44,7 @@ export class ContentService {
     const movies = await this.prismaService.content.findMany({
       where,
       take: pageSize,
-      skip,
-      include: {
-        genres: true
-      }
+      skip
     })
 
     const totalMovie = await this.prismaService.content.count({
@@ -117,7 +112,7 @@ export class ContentService {
     trailer: string,
     titleImage: string,
     poster: string,
-    media,
+    media: string,
   ) {
     const content = await this.getContentByUrl(url);
     if (!content) {

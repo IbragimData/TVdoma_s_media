@@ -28,6 +28,7 @@ model Content {
   trailer String?
   titleImage String?
   duration  Int?       // Продолжительность (для фильмов)
+  trailerDuration String?
   releaseDate Int // Дата выхода
   originalTitle String
   seasons   Season[]   // Только для сериалов

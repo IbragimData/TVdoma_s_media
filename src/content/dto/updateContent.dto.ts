@@ -15,6 +15,8 @@ export class updateContentDto {
     @IsString()
     @MinLength(1)
     shortDescription:string
+    @IsString()
+    trailerDuration: string
     @Type(()=>Number)
     @IsNumber()
     ageLimit: number

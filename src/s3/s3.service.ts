@@ -15,6 +15,10 @@ export class S3Service {
             credentials: {
                 accessKeyId: this.configService.get("AWS_ACCESS_KEY_ID"),
                 secretAccessKey: this.configService.get("AWS_SECRET_ACCESS_KEY")
+            },
+            requestHandler: {
+                connectionTimeout: 300000,
+                socketTimeout: 300000
             }
         })
     }
