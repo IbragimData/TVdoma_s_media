@@ -19,12 +19,11 @@ import { createSeasonDto, updateSeasonDto } from 'src/season/dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { BannerService } from 'src/banner/banner.service';
 import { PosterService } from 'src/poster/poster.service';
-import { title } from 'process';
 import { TitleImageService } from 'src/title-image/title-image.service';
 import { TrailerService } from 'src/trailer/trailer.service';
 import { GenreService } from 'src/genre/genre.service';
 import { filterContentDto } from './dto/filterContent.dto';
-import { Multer } from 'multer';
+import { MediaService } from 'src/media/media.service';
 
 @Controller('content')
 export class ContentController {
@@ -36,14 +35,12 @@ export class ContentController {
     private readonly titleImageService: TitleImageService,
     private readonly trailerService: TrailerService,
     private readonly genreService: GenreService,
+    private readonly mediaService:MediaService
   ) {}
 
-
   @Get()
-  getContent(
-    @Query() dto: filterContentDto
-  ){  
-    return this.contentService.getMany(dto)
+  getContent(@Query() dto: filterContentDto) {
+    return this.contentService.getMany(dto);
   }
 
   @Get(':url')
@@ -55,52 +52,13 @@ export class ContentController {
     return content;
   }
 
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'banner', maxCount: 1 },
-      { name: 'poster', maxCount: 1 },
-      { name: 'media', maxCount: 1 },
-      { name: 'titleImage', maxCount: 1 },
-      { name: 'trailer', maxCount: 1 },
-    ]),
-  )
   @Post()
-  async createContent(
-    @Body() dto: createContentDto,
-    @UploadedFiles()
-    files: {
-      banner?: Express.Multer.File[];
-      poster?: Express.Multer.File[];
-      media?: Express.Multer.File[];
-      titleImage?: Express.Multer.File[];
-      trailer: Express.Multer.File[];
-    },
-  ) {
+  async createContent(@Body() dto: createContentDto) {
     const content = await this.contentService.getContentByUrl(dto.url);
     if (content) {
       throw new BadRequestException();
     }
-    const poster = files.poster && files.poster[0];
-    const media = files.media && files.media[0];
-    const titleImage = files.titleImage && files.titleImage[0];
-    const trailer = files.trailer && files.trailer[0];
-    const bucker = 'account-910';
-    let bannerKey: string;
-    let posterKey: string;
-    let mediaKey: string;
-    let titleImageKey: string;
-    let trailerKey: string;
-    if (media) {
-      mediaKey = await this.contentService.uploadMedia(media, bucker);
-    }
-    return await this.contentService.createContent(
-      dto,
-      bannerKey,
-      posterKey,
-      mediaKey,
-      titleImageKey,
-      trailerKey,
-    );
+    return await this.contentService.createContent(dto);
   }
 
   @Patch(':url')
@@ -139,13 +97,6 @@ export class ContentController {
     if (!content) {
       throw new BadRequestException();
     }
-    if (media) {
-      mediaKey = await this.contentService.updateMedia(
-        content.id,
-        bucker,
-        titleImage,
-      );
-    }
     return await this.contentService.updateContent(
       dto,
       url,
@@ -176,9 +127,6 @@ export class ContentController {
     }
     if (content.trailer) {
       await this.trailerService.deleteTrailer(bucker, content.id);
-    }
-    if (content.media) {
-      await this.contentService.deleteMedia(content.id, bucker);
     }
     return await this.contentService.deleteContent(url);
   }
@@ -213,27 +161,49 @@ export class ContentController {
     return await this.seasonService.deleteSeason(contentId, seasonId);
   }
 
-  @Delete(':contentId/media')
-  async deleteMedia(@Param('contentId', ParseIntPipe) contentId: number) {
-    console.log(contentId);
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'media', maxCount: 1 }]))
+  @Post(':contentId/media')
+  async uploadMedia(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @UploadedFiles() files: { media: Express.Multer.File[] },
+  ) {
     const bucker = 'account-910';
-    return await this.contentService.deleteMedia(contentId, bucker);
+    const content = await this.contentService.getContentById(contentId);
+    if (!content) {
+      throw new BadRequestException();
+    }
+    const media = files.media[0];
+    if (!media) {
+      throw new BadRequestException();
+    }
+
+    return await this.mediaService.uploadMedia(
+      media,
+      bucker,
+      contentId,
+    );
   }
 
-
-  @UseInterceptors(FileFieldsInterceptor([
-    {name: "poster", maxCount: 1}
-  ]))
-  @Post(':contentId/poster')
-  async uploadPoster(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {poster: Express.Multer.File[]}) {
+  @Delete(':contentId/media')
+  async deleteMedia(@Param('contentId', ParseIntPipe) contentId: number) {
     const bucker = 'account-910';
-    const content = await this.contentService.getContentById(contentId)
-    if(!content){
-      throw new BadRequestException()
+    return await this.mediaService.deleteMedia(contentId, bucker);
+  }
+
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'poster', maxCount: 1 }]))
+  @Post(':contentId/poster')
+  async uploadPoster(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @UploadedFiles() files: { poster: Express.Multer.File[] },
+  ) {
+    const bucker = 'account-910';
+    const content = await this.contentService.getContentById(contentId);
+    if (!content) {
+      throw new BadRequestException();
     }
-    const poster = files.poster[0]
-    if(!poster){
-      throw new BadRequestException()
+    const poster = files.poster[0];
+    if (!poster) {
+      throw new BadRequestException();
     }
 
     return await this.posterService.uploadPoster(poster, bucker, contentId);
@@ -244,21 +214,21 @@ export class ContentController {
     const bucker = 'account-910';
     return await this.posterService.deletePoster(bucker, contentId);
   }
-  
 
-  @UseInterceptors(FileFieldsInterceptor([
-    {name: "banner", maxCount: 1}
-  ]))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'banner', maxCount: 1 }]))
   @Post(':contentId/banner')
-  async uploadBanner(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {banner?: Express.Multer.File[]; }) {
+  async uploadBanner(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @UploadedFiles() files: { banner?: Express.Multer.File[] },
+  ) {
     const bucker = 'account-910';
-    const content = await this.contentService.getContentById(contentId)
-    if(!content){
-      throw new BadRequestException()
+    const content = await this.contentService.getContentById(contentId);
+    if (!content) {
+      throw new BadRequestException();
     }
-    const banner = files.banner[0]
-    if(!banner){
-      throw new BadRequestException()
+    const banner = files.banner[0];
+    if (!banner) {
+      throw new BadRequestException();
     }
     return await this.bannerService.uploadBanner(banner, bucker, contentId);
   }
@@ -269,43 +239,49 @@ export class ContentController {
     return await this.bannerService.deleteBanner(bucker, contentId);
   }
 
-  @UseInterceptors(FileFieldsInterceptor([
-    {name: "titleImage", maxCount: 1}
-  ]))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'titleImage', maxCount: 1 }]))
   @Post(':contentId/title-image')
-  async uploadTitleImage(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {titleImage: Express.Multer.File[]}) {
+  async uploadTitleImage(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @UploadedFiles() files: { titleImage: Express.Multer.File[] },
+  ) {
     const bucker = 'account-910';
-    const content = await this.contentService.getContentById(contentId)
-    if(!content){
-      throw new BadRequestException()
+    const content = await this.contentService.getContentById(contentId);
+    if (!content) {
+      throw new BadRequestException();
     }
-    const titleImage = files.titleImage[0]
-    if(!titleImage){
-      throw new BadRequestException()
+    const titleImage = files.titleImage[0];
+    if (!titleImage) {
+      throw new BadRequestException();
     }
 
-    return await this.titleImageService.uploadTitleImage(titleImage, bucker, contentId);
+    return await this.titleImageService.uploadTitleImage(
+      titleImage,
+      bucker,
+      contentId,
+    );
   }
-  
+
   @Delete(':contentId/title-image')
   async deleteTitleImage(@Param('contentId', ParseIntPipe) contentId: number) {
     const bucker = 'account-910';
     return await this.titleImageService.deleteTitleImage(bucker, contentId);
   }
 
-  @UseInterceptors(FileFieldsInterceptor([
-    {name: "trailer", maxCount: 1}
-  ]))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'trailer', maxCount: 1 }]))
   @Post(':contentId/trailer')
-  async uploadTrailer(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {trailer: Express.Multer.File[]}) {
+  async uploadTrailer(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @UploadedFiles() files: { trailer: Express.Multer.File[] },
+  ) {
     const bucker = 'account-910';
-    const content = await this.contentService.getContentById(contentId)
-    if(!content){
-      throw new BadRequestException()
+    const content = await this.contentService.getContentById(contentId);
+    if (!content) {
+      throw new BadRequestException();
     }
-    const trailer = files.trailer[0]
-    if(!trailer){
-      throw new BadRequestException()
+    const trailer = files.trailer[0];
+    if (!trailer) {
+      throw new BadRequestException();
     }
 
     return await this.trailerService.uploadTrailer(trailer, bucker, contentId);

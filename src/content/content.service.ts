@@ -82,11 +82,6 @@ export class ContentService {
 
   async createContent(
     dto: createContentDto,
-    banner: string,
-    poster: string,
-    media: string,
-    titleImage: string,
-    trailer: string,
   ) {
     const content = await this.getContentByUrl(dto.url);
     if (content) {
@@ -94,12 +89,7 @@ export class ContentService {
     }
     return await this.prismaService.content.create({
       data: {
-        ...dto,
-        banner,
-        poster,
-        media,
-        titleImage,
-        trailer,
+        ...dto
       },
     });
   }
@@ -161,44 +151,6 @@ export class ContentService {
     });
   }
 
-  async uploadMedia(file: Express.Multer.File, bucker: string) {
-    const key = v4();
-    const _key = await this.s3Service.upload(file, bucker, 'media/' + key);
-    const resUpload = _key.key.substring(6);
-    return resUpload;
-  }
 
-  async deleteMedia(id: number, bucker: string) {
-    const content = await this.getContentById(id);
-    if (!content) {
-      throw new BadRequestException();
-    }
 
-    if (!content.media) {
-      return content;
-    }
-
-    await this.s3Service.deleteFile(bucker, 'media/' + content.media);
-    return await this.prismaService.content.update({
-      where: {
-        id,
-      },
-      data: {
-        media: null,
-      },
-    });
-  }
-
-  async updateMedia(id: number, bucker: string, file: Express.Multer.File) {
-    const content = await this.getContentById(id);
-    if (!content) {
-      throw new BadRequestException();
-    }
-
-    if (content.media) {
-      await this.deleteMedia(content.id, bucker);
-    }
-
-    return await this.uploadMedia(file, bucker);
-  }
 }
