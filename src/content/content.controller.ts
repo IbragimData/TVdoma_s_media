@@ -93,10 +93,6 @@ export class ContentController {
     if (media) {
       mediaKey = await this.contentService.uploadMedia(media, bucker);
     }
-    if (trailer) {
-      trailerKey = await this.trailerService.uploadTrailer(trailer, bucker);
-    }
-
     return await this.contentService.createContent(
       dto,
       bannerKey,
@@ -142,13 +138,6 @@ export class ContentController {
     const content = await this.contentService.getContentByUrl(url);
     if (!content) {
       throw new BadRequestException();
-    }
-    if (trailer) {
-      trailerKey = await this.trailerService.updateTrailer(
-        content.id,
-        bucker,
-        trailer,
-      );
     }
     if (media) {
       mediaKey = await this.contentService.updateMedia(
@@ -302,6 +291,24 @@ export class ContentController {
   async deleteTitleImage(@Param('contentId', ParseIntPipe) contentId: number) {
     const bucker = 'account-910';
     return await this.titleImageService.deleteTitleImage(bucker, contentId);
+  }
+
+  @UseInterceptors(FileFieldsInterceptor([
+    {name: "trailer", maxCount: 1}
+  ]))
+  @Post(':contentId/trailer')
+  async uploadTrailer(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {trailer: Express.Multer.File[]}) {
+    const bucker = 'account-910';
+    const content = await this.contentService.getContentById(contentId)
+    if(!content){
+      throw new BadRequestException()
+    }
+    const trailer = files.trailer[0]
+    if(!trailer){
+      throw new BadRequestException()
+    }
+
+    return await this.trailerService.uploadTrailer(trailer, bucker, contentId);
   }
 
   @Delete(':contentId/trailer')

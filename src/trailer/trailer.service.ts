@@ -14,12 +14,28 @@ export class TrailerService {
         private readonly contentService:ContentService
     ){}
 
-    async uploadTrailer(file:Express.Multer.File, bucker:string){
+    async uploadTrailer(file:Express.Multer.File, bucker:string, contentId:number){
+        const content = await this.contentService.getContentById(contentId)
+        if(!content){
+            throw new BadRequestException()
+        }
+        if(content.banner){
+            await this.deleteTrailer(bucker, content.id)
+        }
+
+        
         const key = v4()
 
         const _key = await this.s3Service.upload(file, bucker, "trailer/" + key)
         const resUpload =  _key.key.substring(8)
-        return resUpload
+        return await this.prismaService.content.update({
+            where: {
+                id: content.id
+            }, 
+            data: {
+                trailer: resUpload
+            }
+        })
     }
 
     async deleteTrailer(bucker:string, id:number){
@@ -62,7 +78,7 @@ export class TrailerService {
             await this.deleteTrailer(bucker, content.id)
         }
 
-        const key = await this.uploadTrailer(file, bucker)
+        const key = await this.uploadTrailer(file, bucker, content.id)
         return key
     }
 
