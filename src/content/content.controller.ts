@@ -24,6 +24,7 @@ import { TitleImageService } from 'src/title-image/title-image.service';
 import { TrailerService } from 'src/trailer/trailer.service';
 import { GenreService } from 'src/genre/genre.service';
 import { filterContentDto } from './dto/filterContent.dto';
+import { Multer } from 'multer';
 
 @Controller('content')
 export class ContentController {
@@ -89,9 +90,6 @@ export class ContentController {
     let mediaKey: string;
     let titleImageKey: string;
     let trailerKey: string;
-    if (poster) {
-      posterKey = await this.posterService.uploadPoster(poster, bucker);
-    }
     if (media) {
       mediaKey = await this.contentService.uploadMedia(media, bucker);
     }
@@ -163,13 +161,6 @@ export class ContentController {
         content.id,
         bucker,
         titleImage,
-      );
-    }
-    if (poster) {
-      posterKey = await this.posterService.updatePoster(
-        content.id,
-        bucker,
-        poster,
       );
     }
     if (media) {
@@ -251,6 +242,25 @@ export class ContentController {
     console.log(contentId);
     const bucker = 'account-910';
     return await this.contentService.deleteMedia(contentId, bucker);
+  }
+
+
+  @UseInterceptors(FileFieldsInterceptor([
+    {name: "poster", maxCount: 1}
+  ]))
+  @Post(':contentId/poster')
+  async uploadPoster(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {poster: Express.Multer.File[]}) {
+    const bucker = 'account-910';
+    const content = await this.contentService.getContentById(contentId)
+    if(!content){
+      throw new BadRequestException()
+    }
+    const poster = files.poster[0]
+    if(!poster){
+      throw new BadRequestException()
+    }
+
+    return await this.posterService.uploadPoster(poster, bucker, contentId);
   }
 
   @Delete(':contentId/poster')
