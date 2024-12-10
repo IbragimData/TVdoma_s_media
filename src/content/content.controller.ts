@@ -93,12 +93,6 @@ export class ContentController {
     if (media) {
       mediaKey = await this.contentService.uploadMedia(media, bucker);
     }
-    if (titleImage) {
-      titleImageKey = await this.titleImageService.uploadTitleImage(
-        media,
-        bucker,
-      );
-    }
     if (trailer) {
       trailerKey = await this.trailerService.uploadTrailer(trailer, bucker);
     }
@@ -154,13 +148,6 @@ export class ContentController {
         content.id,
         bucker,
         trailer,
-      );
-    }
-    if (titleImage) {
-      titleImageKey = await this.titleImageService.updateTitleImage(
-        content.id,
-        bucker,
-        titleImage,
       );
     }
     if (media) {
@@ -293,6 +280,24 @@ export class ContentController {
     return await this.bannerService.deleteBanner(bucker, contentId);
   }
 
+  @UseInterceptors(FileFieldsInterceptor([
+    {name: "titleImage", maxCount: 1}
+  ]))
+  @Post(':contentId/title-image')
+  async uploadTitleImage(@Param('contentId', ParseIntPipe) contentId: number, @UploadedFiles() files: {titleImage: Express.Multer.File[]}) {
+    const bucker = 'account-910';
+    const content = await this.contentService.getContentById(contentId)
+    if(!content){
+      throw new BadRequestException()
+    }
+    const titleImage = files.titleImage[0]
+    if(!titleImage){
+      throw new BadRequestException()
+    }
+
+    return await this.titleImageService.uploadTitleImage(titleImage, bucker, contentId);
+  }
+  
   @Delete(':contentId/title-image')
   async deleteTitleImage(@Param('contentId', ParseIntPipe) contentId: number) {
     const bucker = 'account-910';

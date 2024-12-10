@@ -14,12 +14,27 @@ export class TitleImageService {
         private readonly contentService:ContentService
     ){}
 
-    async uploadTitleImage(file:Express.Multer.File, bucker:string){
+    async uploadTitleImage(file:Express.Multer.File, bucker:string, contentId: number){
+
+        const content = await this.contentService.getContentById(contentId)
+        if(!content){
+            throw new BadRequestException()
+        }
+        if(content.banner){
+            await this.deleteTitleImage(bucker, content.id)
+        }
         const key = v4()
 
         const _key = await this.s3Service.upload(file, bucker, "title-image/" + key)
         const resUpload =  _key.key.substring(12)
-        return resUpload
+        return await this.prismaService.content.update({
+            where: {
+                id: content.id
+            },
+            data: {
+                titleImage: resUpload
+            }
+        })
     }
 
     async deleteTitleImage(bucker:string, id:number){
@@ -62,7 +77,7 @@ export class TitleImageService {
             await this.deleteTitleImage(bucker, content.id)
         }
 
-        const key = await this.uploadTitleImage(file, bucker)
+        const key = await this.uploadTitleImage(file, bucker, content.id)
         return key
     }
 
