@@ -54,6 +54,7 @@ export class ContentController {
 
   @Post()
   async createContent(@Body() dto: createContentDto) {
+    console.log(dto)
     const content = await this.contentService.getContentByUrl(dto.url);
     if (content) {
       throw new BadRequestException();
@@ -289,6 +290,7 @@ export class ContentController {
 
   @Delete(':contentId/trailer')
   async deleteTrailer(@Param('contentId', ParseIntPipe) contentId: number) {
+
     const bucker = 'account-910';
     return await this.trailerService.deleteTrailer(bucker, contentId);
   }
