@@ -1,15 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createContentDto, updateContentDto } from './dto';
-import { S3Service } from 'src/s3/s3.service';
-import { v4 } from 'uuid';
 import { filterContentDto } from './dto/filterContent.dto';
 
 @Injectable()
 export class ContentService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly s3Service: S3Service,
   ) {}
 
   async getMany(dto: filterContentDto) {

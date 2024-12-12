@@ -18,16 +18,17 @@ export class GenreService {
     return this.prismaService.genre.findUnique({ where: { title } });
   }
 
-  async createGenre(genreDto: genreDto) {
+  async createGenre(dto: genreDto) {
+    console.log(dto)
     const genre = await this.prismaService.genre.findFirst({
         where: {
-            title: genreDto.title
+            title: dto.title
         }
     })
     if(genre){
         throw new BadRequestException()
     }
-    return this.prismaService.genre.create({ data: { title: genreDto.title } });
+    return this.prismaService.genre.create({ data: { ...dto } });
   }
 
   async updateGenre(id: number, genreDto: genreDto) {
