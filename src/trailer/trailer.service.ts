@@ -62,7 +62,7 @@ export class TrailerService {
   async getTrailerFile(bucket: string, key: string, res: Response) {
     const range = res.req.headers.range; // Получаем заголовок Range
     const fileKey = `trailer/${key}`; // Полный ключ файла
-
+    console.log(range)
     if (range) {
       // Обработка частичного контента
       const file = await this.s3Service.getFileMedia(bucket, fileKey, range);

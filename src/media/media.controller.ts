@@ -1,36 +1,19 @@
 import { Controller, Get, Param, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Stream } from 'stream';
-import { Request, Response } from 'express';
-import { S3Service } from 'src/s3/s3.service';
+import {Response } from 'express';
+import { MediaService } from './media.service';
 
 @Controller('media')
 export class MediaController {
     constructor(
-        private readonly s3Service:S3Service,
+        private readonly mediaService:MediaService,
         
     ){}
     @Get(':key')
-    async streamVideo(@Param('key') key: string, @Req() req: Request, @Res() res: Response) {
-      const bucketName = 'account-910';
-      const range = req.headers.range;
-    
-      const videoFile = await this.s3Service.getFile(bucketName, "media/" + key);
-    
-      if (!videoFile.Body) {
-        return res.status(404).send('File not found');
-      }
-    
-      const videoSize = videoFile.ContentLength;
-      console.log(range)
-      // Если диапазон отсутствует, возвращаем полный файл
-        res.writeHead(200, {
-          'Content-Type': videoFile.ContentType,
-          'Content-Length': videoSize,
-          'Accept-Ranges': 'bytes',
-        });
-        const stream = videoFile.Body as Stream;
-        stream.pipe(res);
+    async streamVideo(@Param('key') key: string, @Res() res: Response) {
+      const bucketName = "account-910"
+      console.log(key)
+      console.log(bucketName)
+      return await this.mediaService.getMediaFile(bucketName, key, res)
     }
 }
 
