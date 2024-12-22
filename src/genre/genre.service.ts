@@ -14,19 +14,19 @@ export class GenreService {
     return this.prismaService.genre.findMany();
   }
 
-  async getGenreById(title: string) {
+  async getGenreByTitle(title: string) {
     return this.prismaService.genre.findUnique({ where: { title } });
   }
 
   async createGenre(dto: genreDto) {
-    console.log(dto)
+    console.log(dto);
     const genre = await this.prismaService.genre.findFirst({
-        where: {
-            title: dto.title
-        }
-    })
-    if(genre){
-        throw new BadRequestException()
+      where: {
+        title: dto.title,
+      },
+    });
+    if (genre) {
+      throw new BadRequestException();
     }
     return this.prismaService.genre.create({ data: { ...dto } });
   }
@@ -42,21 +42,20 @@ export class GenreService {
     return this.prismaService.genre.delete({ where: { id } });
   }
   async addMultipleGenresToContent(contentId: number, genreIds: number[]) {
-
-    const content = await this.contentService.getContentById(contentId)
+    const content = await this.contentService.getContentById(contentId);
     if (!content) {
       throw new BadRequestException();
     }
-  
+
     // Проверяем существование всех жанров
     const genres = await this.prismaService.genre.findMany({
       where: { id: { in: genreIds } },
     });
-  
+
     if (genres.length !== genreIds.length) {
-      throw new BadRequestException()
+      throw new BadRequestException();
     }
-  
+
     // Добавляем множество жанров к контенту
     return this.prismaService.content.update({
       where: { id: contentId },
@@ -73,33 +72,34 @@ export class GenreService {
 
   async deleteGenreFromContent(contentId: number, genreId: number) {
     const content = await this.contentService.getContentById(contentId);
-  
+
     if (!content) {
-      throw new BadRequestException;
+      throw new BadRequestException();
     }
-  
-    const genre = await this.prismaService.genre.findUnique({ where: { id: genreId } });
-  
+
+    const genre = await this.prismaService.genre.findUnique({
+      where: { id: genreId },
+    });
+
     if (!genre) {
       throw new BadRequestException();
     }
-  
+
     // Проверяем, что жанр связан с контентом
     const isGenreLinked = content.genres.some((g) => g.id === genreId);
     if (!isGenreLinked) {
       throw new BadRequestException();
     }
-  
 
     return this.prismaService.content.update({
       where: { id: contentId },
       data: {
         genres: {
-          disconnect: {id: genreId}
+          disconnect: { id: genreId },
         },
       },
       include: {
-        genres: true
+        genres: true,
       },
     });
   }

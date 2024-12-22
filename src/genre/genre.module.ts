@@ -7,6 +7,6 @@ import { S3Service } from 'src/s3/s3.service';
 
 @Module({
   providers: [GenreService, PrismaService, ContentService, S3Service],
-  controllers: [GenreController]
+  controllers: [GenreController],
 })
 export class GenreModule {}

@@ -1,19 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, RequestTimeoutException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createContentDto, updateContentDto } from './dto';
 import { filterContentDto } from './dto/filterContent.dto';
 
 @Injectable()
 export class ContentService {
-  constructor(
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getMany(dto: filterContentDto) {
     const where: any = {};
+    console.log(dto)
 
-    if(dto.type){
-      where.type = dto.type
+    if (dto.type) {
+      where.type = dto.type;
     }
 
     if (dto.genre) {
@@ -22,8 +21,8 @@ export class ContentService {
           title: dto.genre,
         },
       });
-      if(!genre){
-        throw new BadRequestException()
+      if (!genre) {
+        throw new BadRequestException();
       }
       where.genres = {
         some: {
@@ -32,27 +31,26 @@ export class ContentService {
       };
     }
 
-    if(dto.releaseDate){
-      where.releaseDate = dto.releaseDate
+    if (dto.releaseDate) {
+      where.releaseDate = dto.releaseDate;
     }
-    const pageSize = 15
-    const skip = (dto.page - 1) * pageSize
+    const pageSize = 15;
+    const skip = (dto.page - 1) * pageSize;
 
     const movies = await this.prismaService.content.findMany({
       where,
       take: pageSize,
-      skip
-    })
+      skip,
+    });
 
     const totalMovie = await this.prismaService.content.count({
-      where
-    })
+      where,
+    });
 
     return {
       movies,
-      totalPages: Math.ceil(totalMovie / pageSize)
-    }
-    
+      totalPages: Math.ceil(totalMovie / pageSize),
+    };
   }
 
   async getContentById(id: number) {
@@ -71,35 +69,34 @@ export class ContentService {
       where: {
         url,
       },
-      include: {
-        genres: true,
-      },
     });
   }
 
-  async createContent(
-    dto: createContentDto,
-  ) {
+  async getRandomContent(){
+    return this.prismaService.content.findMany({
+      orderBy: {
+        id: "desc"
+      },
+      take: 10,
+      include: {
+        genres: true
+      }
+    })
+  }
+
+  async createContent(dto: createContentDto) {
     const content = await this.getContentByUrl(dto.url);
     if (content) {
       throw new BadRequestException();
     }
     return await this.prismaService.content.create({
       data: {
-        ...dto
+        ...dto,
       },
     });
   }
 
-  async updateContent(
-    dto: updateContentDto,
-    url: string,
-    banner: string,
-    trailer: string,
-    titleImage: string,
-    poster: string,
-    media: string,
-  ) {
+  async updateContent(dto: updateContentDto, url: string) {
     const content = await this.getContentByUrl(url);
     if (!content) {
       throw new BadRequestException();
@@ -123,11 +120,11 @@ export class ContentService {
       },
       data: {
         ...dto,
-        banner,
-        trailer,
-        titleImage,
-        poster,
-        media,
+        banner: content.banner,
+        poster: content.poster,
+        media: content.media,
+        titleImage: content.titleImage,
+        trailer: content.trailer,
       },
     });
   }
@@ -148,6 +145,18 @@ export class ContentService {
     });
   }
 
-
-
+  async getGenreContentByUrl(url: string) {
+    const content = await this.prismaService.content.findFirst({
+      where: {
+        url,
+      },
+      include: {
+        genres: true,
+      },
+    });
+    if (!content) {
+      throw new BadRequestException();
+    }
+    return content;
+  }
 }

@@ -14,57 +14,56 @@ datasource db {
 }
 
 model Content {
-  id Int @id @default(autoincrement())
-  url String @unique
-  title     String
+  id               Int         @id @default(autoincrement())
+  url              String      @unique
+  title            String
   shortDescription String
-  description String
-  ageLimit Int
-  country String
-  type      ContentType // 'FILM' или 'SERIES'
-  media String?
-  banner String?
-  poster String?
-  trailer String?
-  titleImage String?
-  duration  Int?       // Продолжительность (для фильмов)
-  trailerDuration String?
-  releaseDate Int // Дата выхода
-  originalTitle String
-  seasons   Season[]   // Только для сериалов
-  genres Genre[] @relation("ContentGenres")
+  description      String
+  ageLimit         Int
+  country          String
+  type             ContentType // 'FILM' или 'SERIES'
+  media            String?
+  banner           String?
+  poster           String?
+  trailer          String?
+  titleImage       String?
+  duration         Int? // Продолжительность (для фильмов)
+  trailerDuration  Int?
+  releaseDate      Int // Дата выхода
+  originalTitle    String
+  seasons          Season[] // Только для сериалов
+  genres           Genre[]     @relation("ContentGenres")
+
   @@index([url])
 }
 
-model Season { 
-  id        Int      @id @default(autoincrement())
-  number    Int      // Номер сезона
-  content    Content   @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  contentId  Int
+model Season {
+  id        Int       @id @default(autoincrement())
+  number    Int // Номер сезона
+  content   Content   @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId Int
   episodes  Episode[]
 }
 
 model Episode {
-  id        Int      @id @default(autoincrement())
-  title     String
-  number Int
-  duration  Int      // Продолжительность серии
+  id          Int      @id @default(autoincrement())
+  title       String
+  number      Int
+  duration    Int // Продолжительность серии
   releaseDate DateTime
-  media String?
-  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  seasonId  Int
+  media       String?
+  season      Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  seasonId    Int
 }
 
-model Genre{
-  id Int @id @default(autoincrement())
-  title String @unique()
+model Genre {
+  id       Int       @id @default(autoincrement())
+  title    String    @unique()
   rusTitle String?
   contents Content[] @relation("ContentGenres")
+
   @@index([title])
 }
-
-
-
 
 enum ContentType {
   FILM
