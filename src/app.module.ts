@@ -11,11 +11,31 @@ import { PosterModule } from './poster/poster.module';
 import { TitleImageModule } from './title-image/title-image.module';
 import { TrailerModule } from './trailer/trailer.module';
 import { GenreModule } from './genre/genre.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [PrismaModule, ConfigModule.forRoot({
-    isGlobal: true
-  }), MediaModule, BannerModule, S3Module, ContentModule, SeasonModule, EpisodeModule, PosterModule, TitleImageModule, TrailerModule, GenreModule],
+  imports: [
+    PrismaModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MediaModule,
+    BannerModule,
+    S3Module,
+    ContentModule,
+    SeasonModule,
+    EpisodeModule,
+    PosterModule,
+    TitleImageModule,
+    TrailerModule,
+    GenreModule,
+    // Добавляем MulterModule с настройками для загрузки файлов до 5 ГБ
+    MulterModule.register({
+      limits: {
+        fileSize: 5 * 1024 * 1024 * 1024, // 5 ГБ
+      },
+    }),
+  ],
   controllers: [],
   providers: [],
 })
