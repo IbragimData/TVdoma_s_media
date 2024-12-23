@@ -3,16 +3,19 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
+import bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(express.json({ limit: '5gb' }));
+
   app.use(express.urlencoded({ limit: '5gb', extended: true }));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     }),
   );
+  app.use(bodyParser.json({ limit: '5gb' }));
+  app.use(bodyParser.urlencoded({ limit: '5gb', extended: true }));
   const config = new DocumentBuilder()
     .setTitle('Cats example')
     .setDescription('The cats API description')
