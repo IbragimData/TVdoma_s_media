@@ -19,6 +19,7 @@ export class MediaService {
     bucker: string,
     contentId: number,
   ) {
+    console.log('upload ===== start');
     const content = await this.contentService.getContentById(contentId);
     if (!content) {
       throw new BadRequestException();
@@ -31,14 +32,15 @@ export class MediaService {
     const key = v4();
     const _key = await this.s3Service.upload(file, bucker, 'media/' + key);
     const resUpload = _key.key.substring(6);
+    console.log('upload ===== end');
     return await this.prismaService.content.update({
-        where: {
-            id: content.id
-        },
-        data: {
-            media: resUpload
-        }
-    })
+      where: {
+        id: content.id,
+      },
+      data: {
+        media: resUpload,
+      },
+    });
   }
 
   async updateMedia(
@@ -79,12 +81,11 @@ export class MediaService {
     });
   }
 
-  async getMediaFile(bucket: string, key: string, res: Response){
+  async getMediaFile(bucket: string, key: string, res: Response) {
     const range = res.req.headers.range;
-    const fileKey = `media/${key}`; 
+    const fileKey = `media/${key}`;
 
     if (range) {
-      
       const file = await this.s3Service.getFileMedia(bucket, fileKey, range);
 
       const contentLength = parseInt(file.ContentLength?.toString() || '0', 10);
@@ -95,7 +96,7 @@ export class MediaService {
         .split('-')
         .map((value) => parseInt(value, 10));
 
-      res.status(206); 
+      res.status(206);
       res.set({
         'Content-Type': file.ContentType,
         'Content-Length': contentLength,
