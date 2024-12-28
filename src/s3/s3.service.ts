@@ -28,18 +28,21 @@ export class S3Service {
     });
   }
 
-  async upload(file: Express.Multer.File, bucker: string, key: string) {
-    const stream = Readable.from(file.buffer)
+  async upload(file: Express.Multer.File, bucket: string, key: string) {
+    const stream = Readable.from(file.buffer);
+
+    // Конфигурация загрузки в S3
     const upload = new Upload({
       client: this.s3,
       params: {
         Key: key,
-        Bucket: bucker,
-        Body: stream,
+        Bucket: bucket,
+        Body: stream, // Используем поток вместо буфера
         ContentType: file.mimetype,
       },
     });
 
+    // Запускаем загрузку и возвращаем результат
     const data = await upload.done();
     console.log(data);
     return {
@@ -95,3 +98,4 @@ export class S3Service {
     }
   }
 }
+

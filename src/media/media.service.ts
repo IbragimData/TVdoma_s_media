@@ -19,28 +19,33 @@ export class MediaService {
     bucker: string,
     contentId: number,
   ) {
-    console.log('upload ===== start');
-    const content = await this.contentService.getContentById(contentId);
-    if (!content) {
-      throw new BadRequestException();
-    }
+    try {
+      console.log('upload ===== start');
+      const content = await this.contentService.getContentById(contentId);
+      if (!content) {
+        throw new BadRequestException();
+      }
 
-    if (content.media) {
-      await this.deleteMedia(content.id, bucker);
-    }
+      if (content.media) {
+        await this.deleteMedia(content.id, bucker);
+      }
 
-    const key = v4();
-    const _key = await this.s3Service.upload(file, bucker, 'media/' + key);
-    const resUpload = _key.key.substring(6);
-    console.log('upload ===== end');
-    return await this.prismaService.content.update({
-      where: {
-        id: content.id,
-      },
-      data: {
-        media: resUpload,
-      },
-    });
+      const key = v4();
+      const _key = await this.s3Service.upload(file, bucker, 'media/' + key);
+      const resUpload = _key.key.substring(6);
+      console.log('upload ===== end');
+      return await this.prismaService.content.update({
+        where: {
+          id: content.id,
+        },
+        data: {
+          media: resUpload,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+      console.error('killed error');
+    }
   }
 
   async updateMedia(
