@@ -7,6 +7,8 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Readable } from 'stream';
+
 
 @Injectable()
 export class S3Service {
@@ -27,12 +29,13 @@ export class S3Service {
   }
 
   async upload(file: Express.Multer.File, bucker: string, key: string) {
+    const stream = Readable.from(file.buffer)
     const upload = new Upload({
       client: this.s3,
       params: {
         Key: key,
         Bucket: bucker,
-        Body: file.buffer,
+        Body: stream,
         ContentType: file.mimetype,
       },
     });
