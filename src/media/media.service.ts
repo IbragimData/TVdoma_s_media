@@ -87,40 +87,47 @@ export class MediaService {
   }
 
   async getMediaFile(bucket: string, key: string, res: Response) {
-    const range = res.req.headers.range;
+    const range = res.req.headers.range; // Получаем диапазон из заголовков
     const fileKey = `media/${key}`;
-
-    if (range) {
-      const file = await this.s3Service.getFileMedia(bucket, fileKey, range);
-
-      const contentLength = parseInt(file.ContentLength?.toString() || '0', 10);
-      const totalSize = parseInt(file.ContentRange?.split('/')[1] || '0', 10);
-
-      const [start, end] = range
-        .replace(/bytes=/, '')
-        .split('-')
-        .map((value) => parseInt(value, 10));
-
-      res.status(206);
-      res.set({
-        'Content-Type': file.ContentType,
-        'Content-Length': contentLength,
-        'Accept-Ranges': 'bytes',
-        'Content-Range': `bytes ${start}-${end || totalSize - 1}/${totalSize}`,
-      });
-
-      (file.Body as Stream).pipe(res); // Передаем поток данных клиенту
-    } else {
-      // Обработка полного файла
-      const file = await this.s3Service.getFileMedia(bucket, fileKey);
-
-      res.set({
-        'Content-Type': file.ContentType,
-        'Content-Length': file.ContentLength,
-        'Accept-Ranges': 'bytes', // Указываем, что поддерживаются диапазоны
-      });
-
-      (file.Body as Stream).pipe(res); // Передаем поток данных клиенту
+  
+    try {
+      if (range) {
+        const file = await this.s3Service.getFileMedia(bucket, fileKey, range);
+  
+        const contentLength = parseInt(file.ContentLength?.toString() || '0', 10);
+        const totalSize = parseInt(file.ContentRange?.split('/')[1] || '0', 10);
+  
+        const [start, end] = range
+          .replace(/bytes=/, '')
+          .split('-')
+          .map((value) => parseInt(value, 10));
+  
+        const endPosition = end || totalSize - 1;
+  
+        res.status(206);
+        res.set({
+          'Content-Type': file.ContentType,
+          'Content-Length': contentLength,
+          'Accept-Ranges': 'bytes',
+          'Content-Range': `bytes ${start}-${endPosition}/${totalSize}`,
+        });
+  
+        (file.Body as Stream).pipe(res); // Передаем поток данных клиенту
+      } else {
+        // Если диапазон не указан, передаем весь файл
+        const file = await this.s3Service.getFileMedia(bucket, fileKey);
+  
+        res.set({
+          'Content-Type': file.ContentType,
+          'Content-Length': file.ContentLength,
+          'Accept-Ranges': 'bytes',
+        });
+  
+        (file.Body as Stream).pipe(res); // Передаем поток данных клиенту
+      }
+    } catch (error) {
+      console.error('Error streaming file:', error.message);
+      res.status(500).send('Error streaming file');
     }
   }
 }
