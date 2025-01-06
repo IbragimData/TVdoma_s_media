@@ -21,6 +21,7 @@ model Content {
   description      String
   ageLimit         Int
   country          String
+  mainGenre String @default("Драма")
   type             ContentType // 'FILM' или 'SERIES'
   media            String?
   banner           String?

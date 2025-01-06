@@ -34,4 +34,5 @@ export class createContentDto {
   @MinLength(2)
   url: string;
   type: ContentType;
+  mainGenre: string
 }
