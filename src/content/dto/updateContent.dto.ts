@@ -34,4 +34,5 @@ export class updateContentDto {
   @MinLength(2)
   url?: string;
   type: ContentType; 
+  mainGenre: string
 }
