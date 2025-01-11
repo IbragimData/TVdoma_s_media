@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { ContentService } from 'src/content/content.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
-import { Stream } from 'stream';
+import { Readable } from 'stream';
 import { v4 } from 'uuid';
 
 @Injectable()
@@ -86,8 +86,9 @@ export class MediaService {
     });
   }
 
+
   async getMediaFile(bucket: string, key: string, res: Response) {
-    const range = res.req.headers.range; // Получаем диапазон из заголовков
+    const range = res.req.headers.range;
     const fileKey = `media/${key}`;
   
     try {
@@ -102,7 +103,14 @@ export class MediaService {
           .split('-')
           .map((value) => parseInt(value, 10));
   
-        const endPosition = end || totalSize - 1;
+        const endPosition = end || Math.min(start + contentLength - 1, totalSize - 1);
+  
+        if (start >= totalSize || endPosition >= totalSize) {
+          res.status(416).set({
+            'Content-Range': `bytes */${totalSize}`,
+          }).send('Requested Range Not Satisfiable');
+          return;
+        }
   
         res.status(206);
         res.set({
@@ -112,9 +120,16 @@ export class MediaService {
           'Content-Range': `bytes ${start}-${endPosition}/${totalSize}`,
         });
   
-        (file.Body as Stream).pipe(res); // Передаем поток данных клиенту
+        const stream = file.Body as Readable;
+  
+        stream.pipe(res);
+  
+        res.on('close', () => {
+          if (typeof stream.destroy === 'function') {
+            stream.destroy();
+          }
+        });
       } else {
-        // Если диапазон не указан, передаем весь файл
         const file = await this.s3Service.getFileMedia(bucket, fileKey);
   
         res.set({
@@ -123,7 +138,15 @@ export class MediaService {
           'Accept-Ranges': 'bytes',
         });
   
-        (file.Body as Stream).pipe(res); // Передаем поток данных клиенту
+        const stream = file.Body as Readable;
+  
+        stream.pipe(res);
+  
+        res.on('close', () => {
+          if (typeof stream.destroy === 'function') {
+            stream.destroy();
+          }
+        });
       }
     } catch (error) {
       console.error('Error streaming file:', error.message);
