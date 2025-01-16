@@ -9,7 +9,7 @@ export class PosterController {
     ){}
     @Get(":key")
     async getPosterFile(@Param("key") key:string, @Res() res:Response){
-        const bucketName = "account-910"
+        const bucketName = "01f301da-9134476f-1b10-485d-89aa-d32769ac66de"
         return await this.posterService.getPosterFile(bucketName, key, res)
     }
 }

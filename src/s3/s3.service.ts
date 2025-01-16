@@ -16,7 +16,7 @@ export class S3Service {
   constructor(private readonly configService: ConfigService) {
     this.s3 = new S3Client({
       region: this.configService.get('AWS_REGION'),
-      endpoint: 'https://storage.yandexcloud.net',
+      endpoint: 'https://s3.timeweb.cloud',
       credentials: {
         accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
         secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),

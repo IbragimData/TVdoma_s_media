@@ -81,7 +81,7 @@ export class ContentController {
   @Delete(':url')
   async deleteContent(@Param('url') url: string) {
     const content = await this.contentService.getContentByUrl(url);
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     if (!content) {
       throw new BadRequestException();
     }
@@ -137,7 +137,7 @@ export class ContentController {
     @Param('contentId', ParseIntPipe) contentId: number,
     @UploadedFiles() files: { file: Express.Multer.File[] },
   ) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     const content = await this.contentService.getContentById(contentId);
     if (!content) {
       throw new BadRequestException();
@@ -152,7 +152,7 @@ export class ContentController {
 
   @Delete(':contentId/media')
   async deleteMedia(@Param('contentId', ParseIntPipe) contentId: number) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     return await this.mediaService.deleteMedia(contentId, bucker);
   }
 
@@ -162,7 +162,7 @@ export class ContentController {
     @Param('contentId', ParseIntPipe) contentId: number,
     @UploadedFiles() files: { file: Express.Multer.File[] },
   ) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     const content = await this.contentService.getContentById(contentId);
     if (!content) {
       throw new BadRequestException();
@@ -177,7 +177,7 @@ export class ContentController {
 
   @Delete(':contentId/poster')
   async deletePoster(@Param('contentId', ParseIntPipe) contentId: number) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     return await this.posterService.deletePoster(bucker, contentId);
   }
 
@@ -187,7 +187,7 @@ export class ContentController {
     @Param('contentId', ParseIntPipe) contentId: number,
     @UploadedFiles() files: { file?: Express.Multer.File[] },
   ) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     const content = await this.contentService.getContentById(contentId);
     if (!content) {
       throw new BadRequestException();
@@ -201,7 +201,7 @@ export class ContentController {
 
   @Delete(':contentId/banner')
   async deleteBanner(@Param('contentId', ParseIntPipe) contentId: number) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     return await this.bannerService.deleteBanner(bucker, contentId);
   }
 
@@ -211,7 +211,7 @@ export class ContentController {
     @Param('contentId', ParseIntPipe) contentId: number,
     @UploadedFiles() files: { file: Express.Multer.File[] },
   ) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     const content = await this.contentService.getContentById(contentId);
     if (!content) {
       throw new BadRequestException();
@@ -230,7 +230,7 @@ export class ContentController {
 
   @Delete(':contentId/title-image')
   async deleteTitleImage(@Param('contentId', ParseIntPipe) contentId: number) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     return await this.titleImageService.deleteTitleImage(bucker, contentId);
   }
 
@@ -255,7 +255,7 @@ export class ContentController {
 
   @Delete(':contentId/trailer')
   async deleteTrailer(@Param('contentId', ParseIntPipe) contentId: number) {
-    const bucker = 'account-910';
+    const bucker = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
     return await this.trailerService.deleteTrailer(bucker, contentId);
   }
 
