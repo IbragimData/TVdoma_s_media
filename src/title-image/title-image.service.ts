@@ -57,7 +57,7 @@ export class TitleImageService {
     const key = v4();
 
     const _key = await this.s3Service.upload(
-      compressedFile,
+      file,
       bucker,
       'title-image/' + key,
     );
