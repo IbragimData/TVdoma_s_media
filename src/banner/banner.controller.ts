@@ -10,7 +10,7 @@ export class BannerController {
 
     @Get(":key")
     async getBannerFile(@Param("key") key:string, @Res() res:Response){
-        const bucketName = '01f301da-9134476f-1b10-485d-89aa-d32769ac66de';
+        const bucketName = '01f301da-tvdoma';
         return await this.bannerService.getBannerFile(bucketName, key, res)
     }
 
