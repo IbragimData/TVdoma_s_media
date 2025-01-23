@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
 import { Readable } from 'stream';
 import { v4 } from 'uuid';
+import * as fs from "fs"
+import * as ffmpeg from "fluent-ffmpeg"
 
 @Injectable()
 export class MediaService {
@@ -13,6 +15,32 @@ export class MediaService {
     private readonly prismaService: PrismaService,
     private readonly contentService: ContentService,
   ) {}
+
+  async compressVideo(inputBuffer: Buffer): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const tempInputPath = 'input.mp4';
+      const tempOutputPath = 'output.mp4';
+
+      // Записываем входной буфер в временный файл
+      fs.writeFileSync(tempInputPath, inputBuffer);
+
+      // Используем ffmpeg для сжатия видео
+      ffmpeg(tempInputPath)
+        .outputOptions('-preset', 'slow')  // Оптимизация для качества
+        .outputOptions('-crf', '18')       // Уровень сжатия (чем ниже, тем выше качество)
+        .save(tempOutputPath)
+        .on('end', () => {
+          // Читаем сжатый видеофайл и возвращаем его как Buffer
+          const outputBuffer = fs.readFileSync(tempOutputPath);
+          fs.unlinkSync(tempInputPath);    // Удаляем временные файлы
+          fs.unlinkSync(tempOutputPath);
+          resolve(outputBuffer);
+        })
+        .on('error', (err) => {
+          reject(err);
+        });
+    });
+  }
 
   async uploadMedia(
     file: Express.Multer.File,
@@ -31,7 +59,8 @@ export class MediaService {
       }
 
       const key = v4();
-      const _key = await this.s3Service.upload(file, bucker, 'media/' + key);
+      const compressedBuffer = await this.compressVideo(file.buffer);
+      const _key = await this.s3Service.upload({...file, buffer: compressedBuffer}, bucker, 'media/' + key);
       const resUpload = _key.key.substring(6);
       console.log('upload ===== end');
       return await this.prismaService.content.update({
