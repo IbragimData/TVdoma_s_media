@@ -36,7 +36,7 @@ export class ContentController {
     private readonly trailerService: TrailerService,
     private readonly genreService: GenreService,
     private readonly mediaService: MediaService,
-  ) {}
+  ) { }
 
   @Get()
   getContent(@Query() dto: filterContentDto) {
@@ -47,6 +47,11 @@ export class ContentController {
     return this.contentService.getRandomContent();
   }
 
+  @Get("search")
+  async searchContent(@Query("query") text: string) {
+    return await this.contentService.searchContent(text)
+  }
+
   @Get(':url')
   async getContentByUrl(@Param('url') url: string) {
     const content = await this.contentService.getContentByUrl(url);
@@ -55,6 +60,7 @@ export class ContentController {
     }
     return content;
   }
+
 
   @Post()
   async createContent(@Body() dto: createContentDto) {

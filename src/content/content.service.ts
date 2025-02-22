@@ -5,7 +5,7 @@ import { filterContentDto } from './dto/filterContent.dto';
 
 @Injectable()
 export class ContentService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async getMany(dto: filterContentDto) {
     const where: any = {};
@@ -72,7 +72,7 @@ export class ContentService {
     });
   }
 
-  async getRandomContent(){
+  async getRandomContent() {
     return this.prismaService.content.findMany({
       orderBy: {
         id: "desc"
@@ -159,4 +159,28 @@ export class ContentService {
     }
     return content;
   }
+
+  searchContent = async (query: string) => {
+    return this.prismaService.content.findMany({
+      where: {
+        OR: [
+          { title: { contains: query, mode: "insensitive" } },
+          { originalTitle: { contains: query, mode: "insensitive" } },
+          { shortDescription: { contains: query, mode: "insensitive" } },
+          { description: { contains: query, mode: "insensitive" } },
+          { country: { contains: query, mode: "insensitive" } },
+          { mainGenre: { contains: query, mode: "insensitive" } },
+          {
+            genres: {
+              some: {
+                title: { contains: query, mode: "insensitive" },
+                rusTitle: { contains: query, mode: "insensitive" }
+              }
+            }
+          }
+        ]
+      }
+    });
+  };
+
 }
