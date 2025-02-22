@@ -10,7 +10,7 @@ export class TitleImageController {
 
     @Get(":key")
     async getPosterFile(@Param("key") key:string, @Res() res:Response){
-        const bucketName = "01f301da-tvdoma"
+        const bucketName = "01f301da-tvdoma1"
         console.log(bucketName)
         return await this.titleImageService.getTitleImageFile(bucketName, key, res)
     }

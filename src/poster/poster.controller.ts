@@ -9,7 +9,7 @@ export class PosterController {
     ){}
     @Get(":key")
     async getPosterFile(@Param("key") key:string, @Res() res:Response){
-        const bucketName = "01f301da-tvdoma"
+        const bucketName = "01f301da-tvdoma1"
         return await this.posterService.getPosterFile(bucketName, key, res)
     }
 }

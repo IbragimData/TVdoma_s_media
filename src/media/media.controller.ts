@@ -16,7 +16,7 @@ export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
   @Get(':key')
   async streamVideo(@Param('key') key: string, @Res() res: Response) {
-    const bucketName = '01f301da-tvdoma';
+    const bucketName = '01f301da-tvdoma1';
     console.log(`Streaming video: ${key} from bucket: ${bucketName}`);
 
     try {
