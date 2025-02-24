@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ContentService } from './content.service';
-import { createContentDto, updateContentDto } from './dto';
+import { createContentDto, searchContentDto, updateContentDto } from './dto';
 import { SeasonService } from 'src/season/season.service';
 import { createSeasonDto, updateSeasonDto } from 'src/season/dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -48,8 +48,8 @@ export class ContentController {
   }
 
   @Get("search")
-  async searchContent(@Query("query") text: string) {
-    return await this.contentService.searchContent(text)
+  async searchContent(@Query() dto: searchContentDto) {
+    return await this.contentService.searchContent(dto)
   }
 
   @Get(':url')

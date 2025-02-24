@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, RequestTimeoutException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { createContentDto, updateContentDto } from './dto';
+import { createContentDto, searchContentDto, updateContentDto } from './dto';
 import { filterContentDto } from './dto/filterContent.dto';
 
 @Injectable()
@@ -160,26 +160,29 @@ export class ContentService {
     return content;
   }
 
-  searchContent = async (query: string) => {
+  searchContent = async (dto: searchContentDto) => {
+    const pageSize = 15;
+    const skip = (dto.page - 1) * pageSize;
     return this.prismaService.content.findMany({
       where: {
         OR: [
-          { title: { contains: query, mode: "insensitive" } },
-          { originalTitle: { contains: query, mode: "insensitive" } },
-          { shortDescription: { contains: query, mode: "insensitive" } },
-          { description: { contains: query, mode: "insensitive" } },
-          { country: { contains: query, mode: "insensitive" } },
-          { mainGenre: { contains: query, mode: "insensitive" } },
+          { title: { contains: dto.query, mode: "insensitive" } },
+          { originalTitle: { contains: dto.query, mode: "insensitive" } },
+          { shortDescription: { contains: dto.query, mode: "insensitive" } },
+          { description: { contains: dto.query, mode: "insensitive" } },
+          { country: { contains: dto.query, mode: "insensitive" } },
+          { mainGenre: { contains: dto.query, mode: "insensitive" } },
           {
             genres: {
               some: {
-                title: { contains: query, mode: "insensitive" },
-                rusTitle: { contains: query, mode: "insensitive" }
+                title: { contains: dto.query, mode: "insensitive" },
+                rusTitle: { contains: dto.query, mode: "insensitive" }
               }
             }
           }
         ]
-      }
+      },
+      skip: skip
     });
   };
 
