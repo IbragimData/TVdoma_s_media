@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, RequestTimeoutException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { createContentDto, searchContentDto, updateContentDto } from './dto';
+import { createContentDto, GetNewContent, searchContentDto, updateContentDto } from './dto';
 import { filterContentDto } from './dto/filterContent.dto';
 
 @Injectable()
@@ -51,6 +51,41 @@ export class ContentService {
       movies,
       totalPages: Math.ceil(totalMovie / pageSize),
     };
+  }
+
+  async getNewContent(dto: GetNewContent) {
+
+    const pageSize = 15;
+    const skip = (dto.page - 1) * pageSize;
+
+    const movies = await this.prismaService.content.findMany({
+      where: {
+        releaseDate: {
+          gte: new Date(new Date().setMonth(new Date().getMonth() - 1))
+        },
+      },
+      orderBy: {
+        releaseDate: 'desc',
+      },
+      skip,
+      take: pageSize
+    });
+
+    const totalMovie = await this.prismaService.content.count({
+      where: {
+        releaseDate: {
+          gte: new Date(new Date().setMonth(new Date().getMonth() - 1))
+        },
+      },
+      orderBy: {
+        releaseDate: 'desc',
+      },
+    });
+    return {
+      movies,
+      totalPages: Math.ceil(totalMovie / pageSize),
+    };
+
   }
 
   async getContentById(id: number) {

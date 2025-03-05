@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ContentService } from './content.service';
-import { createContentDto, searchContentDto, updateContentDto } from './dto';
+import { createContentDto, GetNewContent, searchContentDto, updateContentDto } from './dto';
 import { SeasonService } from 'src/season/season.service';
 import { createSeasonDto, updateSeasonDto } from 'src/season/dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -45,6 +45,13 @@ export class ContentController {
   @Get('/random')
   async getRandomContent() {
     return this.contentService.getRandomContent();
+  }
+  
+  @Get('/new')
+  async getNewContent(
+    @Query() dto:GetNewContent
+  ) {
+    return this.contentService.getNewContent(dto);
   }
 
   @Get("search")
