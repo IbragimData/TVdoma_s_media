@@ -1,6 +1,6 @@
 import { ContentType } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, MinLength } from 'class-validator';
+import { IsDate, IsNumber, IsString, MinLength } from 'class-validator';
 
 export class createContentDto {
   @IsString()
@@ -27,9 +27,9 @@ export class createContentDto {
   @Type(() => Number)
   @IsNumber()
   trailerDuration: number;
-  @Type(() => Number)
-  @IsNumber()
-  releaseDate: number;
+  @Type(() => Date)
+  @IsDate()
+  releaseDate: Date;
   @IsString()
   @MinLength(2)
   url: string;

@@ -30,7 +30,7 @@ model Content {
   titleImage       String?
   duration         Int? // Продолжительность (для фильмов)
   trailerDuration  Int?
-  releaseDate      Int // Дата выхода
+  releaseDate      DateTime? // Дата выхода
   originalTitle    String
   seasons          Season[] // Только для сериалов
   genres           Genre[]     @relation("ContentGenres")
